@@ -1,38 +1,143 @@
-.App {
-  text-align: center;
+.App{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+}
+.AppHeader{
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.AppHeader .header-left{ display:flex; align-items:center; gap:12px }
+.AppHeader .header-center{ flex:1; display:flex; justify-content:center }
+.AppHeader .header-right{ display:flex; align-items:center; gap:8px }
+
+.ant-input-search .ant-input{ border-radius:20px }
+.ant-input-search .ant-input-affix-wrapper{ border-radius:20px }
+
+.AppHeader .ant-btn-link{ color:#333 }
+.AppHeader .ant-btn-link:hover{ color:#1890ff }
+.AppFooter{
+height: 64px;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 24px;
+padding: 8px 16px;
+border-top: 1px solid rgba(0, 0, 0, 0.08);
+background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+backdrop-filter: blur(4px);
+box-shadow: 0 -1px 8px rgba(0,0,0,0.03) inset;
+}
+.SideMenuAndPageContent{
+    display: flex;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: rgba(0, 0, 0, 0.05) ;
+}
+.SideMenu{
+    height: 100%;
+    /* fixed sidebar width so main content can flex to fill remaining space */
+    width: 220px;
+    box-sizing: border-box;
+}
+.SideMenuVertical{
+    height: 100%;
+}
+.PageContent{
+    /* allow page content to grow and take available width */
+    flex: 1 1 auto;
+    padding: 20px 24px;
+    box-sizing: border-box;
+    /* remove artificial max width from parent so content fills area; inner pages may still set their own max-width */
+    max-width: none;
+    background: linear-gradient(90deg,#fbfbfd 0%,#f3f8fc 100%); /* Option E: subtle gradient */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Ensure direct children of PageContent expand to fill space */
+.PageContent > *{ width:100% }
+
+/* Make Ant Design Tables and Cards inside content stretch */
+.PageContent .ant-table{ width:100% }
+.PageContent .ant-card{ width:100% }
+
+
+.logo-title {
+    display: inline-block; /* keep gradient limited to text width */
+    background: linear-gradient(270deg, #ff4d4f, #ff7a45, #ffc53d, #73d13d, #36cfc9, #597ef7, #9254de);
+    background-size: 1400% 1400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* for Safari/Chrome */
+    background-clip: text; /* for other browsers */
+    color: transparent;
+    animation: gradientShift 8s ease infinite;
+    font-family: 'Poppins', sans-serif;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+@keyframes gradientShift {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
 }
 
-.App-link {
-  color: #61dafb;
+/* Dashboard grid - left column (table) narrow, right column (chart) flexible */
+.dashboard-grid{ display:flex; gap:20px; align-items:stretch }
+.dashboard-left{ flex: 0 0 420px; display:flex; flex-direction:column }
+.dashboard-right{ flex: 1 1 auto; display:flex; flex-direction:column }
+.dashboard-right .ant-card{ width:100%; height:100% }
+
+/* Top stats row: use grid so 4 cards sit horizontally and distribute equally */
+.stats-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:18px; margin-top:8px }
+.stats-row .stat-item{ min-width:0 }
+.stats-row .stat-item .ant-card{ width:100%; height:110px; display:flex; align-items:center }
+
+.stats-area{ display:block }
+.stats-row-bottom{ display:grid; grid-template-columns: repeat(4, 1fr); gap:18px; margin-top:18px }
+.stats-row-bottom .bottom-col{ min-height:220px }
+.stats-row-bottom .bottom-col .ant-card{ height:100% }
+
+@media (max-width:900px){
+    .stats-row{ grid-template-columns: repeat(2, 1fr) }
+    .stats-row .stat-item .ant-card{ height:auto }
+}
+@media (max-width:520px){
+    .stats-row{ grid-template-columns: 1fr }
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Recent orders spacing */
+.recent-orders{ background: #fff; padding: 16px; border-radius:8px; box-shadow: 0 1px 0 rgba(0,0,0,0.02); display:flex; flex-direction:column }
+.recent-title{ display:block; font-weight:600; margin:0 auto 12px; text-align:center }
+.dashboard-left .recent-orders{ margin-bottom:20px; flex:1 1 auto }
+.recent-body{ flex:1 1 auto; overflow:auto }
+
+/* Footer link styles */
+.footer-link{
+    color: rgba(0,0,0,0.65);
+    transition: color 220ms ease, transform 220ms ease;
+    font-weight: 500;
+}
+.footer-link:hover{
+    color: #1890ff; /* Ant Design primary */
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+.footer-link:focus{
+    outline: 2px solid rgba(24,144,255,0.15);
+    outline-offset: 2px;
+}
+
+/* Responsive: stack footer links on narrow screens */
+@media (max-width: 520px){
+    .AppFooter{
+        height: auto;
+        padding: 12px;
+        flex-direction: column;
+        gap: 8px;
+    }
 }
