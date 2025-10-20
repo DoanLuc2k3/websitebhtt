@@ -1,6 +1,5 @@
-// Lightweight mock API for UI-only mode.
-// Returns Promises with sample data shapes expected by the app.
 
+//dữ liệu cho sản phẩm trong kho 
 const sampleProducts = [
   {
     id: 1,
@@ -32,7 +31,7 @@ const sampleProducts = [
     id: 3,
     title: "Giày Sneakers",
     price: 2000000,
-    discountedPrice: 20000,
+    discountedPrice: 200000,
     quantity: 1,
     total: 200000000,
     thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4XAywk2d8qwBxbcgrrMThMhPji_dKmUe9MfU7lfNXkk-WeDzvA1MOGJH94HdbCs_pmHiXDw&s",
@@ -45,7 +44,7 @@ const sampleProducts = [
 id: 4,
     title: "Áo Khoác",
     price: 4000000,
-    discountedPrice: 20000,
+    discountedPrice: 200000,
     quantity: 1,
     total: 200000000,
     thumbnail: "https://evara.vn/uploads/plugin/product_items/385/1.jpg",
@@ -64,7 +63,7 @@ const sampleUsers = [
     email: "doanmin@example.com",
     phone: "+123456789",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7L63LSnvMMN6ur5jUpr38Srprrjte4HD0fDsDas4jflqQHO-T3QPmK3EvaJeGJhIN0mXa&s",
-    address: { address: "186", city: "Nguyen Huu Tho" },
+    address: { address: "186 Nguyễn Hữu Thọ", city: "Đà Nẵng" },
   },
   {
     id: 2,
@@ -73,7 +72,7 @@ const sampleUsers = [
     email: "doanluc@example.com",
     phone: "+987654321",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD5yEsOiigN-DG_MUtXFVzGpvIr0edKTGCcxIT1jDoXXyoL1huBDFJhzzSCrdpct_SqCvdAQ&s",
-    address: { address: "186", city: "Nguyen Huu Tho" },
+    address: { address: "186 Nguyễn Hữu Thọ", city: "Đà Nẵng" },
   },
 ];
 

@@ -3,6 +3,7 @@ import {
   ShoppingCartOutlined,
   ShoppingOutlined,
   UserOutlined,
+  DashboardOutlined, // ✅ Thêm icon Dashboard
 } from "@ant-design/icons";
 import { Card, Space, Statistic, Table, Typography } from "antd";
 import { useEffect, useState } from "react";
@@ -45,17 +46,52 @@ function Dashboard() {
     getCustomers().then((res) => {
       setCustomers(res.total);
     });
-
-    // activities are now shown in sidebar
   }, []);
 
   return (
-    <Space size={20} direction="vertical">
-      <Typography.Title level={4}>Tổng quan</Typography.Title>
-      <div className="stats-area">
-        <div className="stats-row">
-        <div className="stat-item">
-          <DashboardCard
+    <Space
+      size={20}
+      direction="vertical"
+      style={{
+        width: "100%",
+        padding: "24px",
+        background: "#f5f7fa",
+        borderRadius: "12px",
+      }}
+    >
+      {/* --- Tiêu đề có icon --- */}
+      <Typography.Title
+        level={3}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+         
+          marginBottom: "0",
+        }}
+      >
+        <DashboardOutlined
+          style={{
+            color: "white",
+            backgroundColor: "purple",
+            borderRadius: "50%",
+            padding: 8,
+            fontSize: 20,
+          }}
+        
+        />
+        <span style={{ fontWeight: "600" }}>Tổng quan</span>
+      </Typography.Title>
+
+      {/* --- Dãy thống kê --- */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+          gap: "20px",
+        }}
+      >
+        <DashboardCard
           icon={
             <ShoppingCartOutlined
               style={{
@@ -69,9 +105,7 @@ function Dashboard() {
           }
           title={"Đơn hàng"}
           value={orders}
-          />
-        </div>
-        <div className="stat-item">
+        />
         <DashboardCard
           icon={
             <ShoppingOutlined
@@ -86,9 +120,7 @@ function Dashboard() {
           }
           title={"Quản lý kho"}
           value={inventory}
-          />
-        </div>
-        <div className="stat-item">
+        />
         <DashboardCard
           icon={
             <UserOutlined
@@ -101,11 +133,9 @@ function Dashboard() {
               }}
             />
           }
-          title={"Khách Hàng"}
+          title={"Khách hàng"}
           value={customers}
-          />
-        </div>
-        <div className="stat-item">
+        />
         <DashboardCard
           icon={
             <DollarCircleOutlined
@@ -120,19 +150,20 @@ function Dashboard() {
           }
           title={"Tổng doanh thu"}
           value={revenue}
-          />
-        </div>
-        </div>
-
-        
+        />
       </div>
-      <div className="dashboard-grid">
-        <div className="dashboard-left">
-          <RecentOrders />
-        </div>
-        <div className="dashboard-right">
-          <DashboardChart />
-        </div>
+
+      {/* --- Biểu đồ và đơn hàng gần đây --- */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.2fr 1fr",
+          gap: "20px",
+          marginTop: "20px",
+        }}
+      >
+        <RecentOrders />
+        <DashboardChart />
       </div>
     </Space>
   );
@@ -140,7 +171,12 @@ function Dashboard() {
 
 function DashboardCard({ title, value, icon }) {
   return (
-    <Card>
+    <Card
+      style={{
+        borderRadius: 16,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+      }}
+    >
       <Space direction="horizontal">
         {icon}
         <Statistic title={title} value={value} />
@@ -148,6 +184,7 @@ function DashboardCard({ title, value, icon }) {
     </Card>
   );
 }
+
 function RecentOrders() {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -155,37 +192,34 @@ function RecentOrders() {
   useEffect(() => {
     setLoading(true);
     getOrders().then((res) => {
-      const items = (res.products || []).slice(0, 3).map((p) => ({ ...p, key: p.id ?? p.title }));
+      const items = (res.products || [])
+        .slice(0, 4)
+        .map((p) => ({ ...p, key: p.id ?? p.title }));
       setDataSource(items);
       setLoading(false);
     });
   }, []);
 
   return (
-    <div className="recent-orders">
-      <Typography.Text className="recent-title">Đơn hàng gần đây</Typography.Text>
-      <div className="recent-body">
+    <Card
+      title="🛒 Đơn hàng gần đây"
+      style={{
+        borderRadius: 16,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+      }}
+    >
       <Table
         columns={[
-          {
-            title: "Tên sản phẩm",
-            dataIndex: "title",
-          },
-          {
-            title: "Số lượng",
-            dataIndex: "quantity",
-          },
-          {
-            title: "Đơn giá",
-            dataIndex: "discountedPrice",
-          },
+          { title: "Tên sản phẩm", dataIndex: "title" },
+          { title: "Số lượng", dataIndex: "quantity" },
+          { title: "Đơn giá", dataIndex: "discountedPrice" },
         ]}
         loading={loading}
         dataSource={dataSource}
         pagination={false}
-      ></Table>
-      </div>
-    </div>
+        size="middle"
+      />
+    </Card>
   );
 }
 
@@ -197,47 +231,45 @@ function DashboardChart() {
 
   useEffect(() => {
     getRevenue().then((res) => {
-      const labels = res.carts.map((cart) => {
-        return `User-${cart.userId}`;
-      });
-      const data = res.carts.map((cart) => {
-        return cart.discountedTotal;
-      });
+      const labels = res.carts.map((cart) => `User-${cart.userId}`);
+      const data = res.carts.map((cart) => cart.discountedTotal);
 
-      const dataSource = {
+      setReveneuData({
         labels,
         datasets: [
           {
             label: "Doanh thu",
-            data: data,
-            backgroundColor: "rgba(255, 0, 0, 1)",
+            data,
+            backgroundColor: "rgba(255, 99, 132, 0.7)",
+            borderRadius: 6,
           },
         ],
-      };
-
-      setReveneuData(dataSource);
+      });
     });
   }, []);
 
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "bottom",
-      },
+      legend: { position: "bottom" },
       title: {
         display: true,
-        text: "Doanh thu đơn hàng",
+        text: "📊 Doanh thu đơn hàng",
+        font: { size: 16, weight: "bold" },
       },
     },
   };
 
   return (
-    <Card style={{ width: '100%', height: '100%' }}>
-      <div style={{ width: '100%', height: '100%' }}>
-        <Bar options={options} data={reveneuData} />
-      </div>
+    <Card
+      style={{
+        borderRadius: 16,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+      }}
+    >
+      <Bar options={options} data={reveneuData} />
     </Card>
   );
 }
+
 export default Dashboard;
