@@ -8,7 +8,6 @@ import {
 import {
   Badge,
   Drawer,
-  Image,
   List,
   Space,
   Typography,
@@ -33,12 +32,13 @@ function AppHeader() {
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Lấy dữ liệu bình luận + đơn hàng
   useEffect(() => {
-    getComments().then((res) => setComments(res.comments));
-    getOrders().then((res) => setOrders(res.products));
+    getComments().then((res) => setComments(res.comments || []));
+    getOrders().then((res) => setOrders(res.products || []));
   }, []);
 
-  // ✅ Xử lý đăng xuất
+  // Xử lý đăng xuất
   const handleLogout = () => {
     localStorage.removeItem("adminLogin");
     message.success("Quay lại thành công!");
@@ -46,7 +46,7 @@ function AppHeader() {
     navigate("/");
   };
 
-  // ✅ Menu dropdown của Admin
+  // Menu dropdown của Admin
   const adminMenu = {
     items: [
       {
@@ -83,35 +83,44 @@ function AppHeader() {
         borderRadius: 8,
       }}
     >
-      {/* --- LOGO + TITLE --- */}
+      {/* --- LOGO --- */}
       <Flex align="center" gap={10}>
-        <Image width={40} src="https://i.imgur.com/AUPzhaY.png" preview={false} />
         <Typography.Title level={3} style={{ margin: 0 }}>
-          <span className="logo-title" style={{ color: "#1677ff" }}>
-            L-M Dashboard
-          </span>
+          <img
+            src="https://i.imgur.com/sf3D9V9.png" // ← Link ảnh logo
+            alt="Logo"
+            style={{
+              height: 48,
+              objectFit: "contain",
+              display: "block",
+            }}
+          />
         </Typography.Title>
       </Flex>
 
       {/* --- SEARCH --- */}
       <Input.Search
-        placeholder="Tìm kiếm..."
+        placeholder="Tìm kiếm sản phẩm..."
         style={{
           width: 360,
           borderRadius: 20,
           background: "#f9fafc",
           border: "1px solid #d9d9d9",
         }}
+        allowClear
       />
 
       {/* --- ICONS + ADMIN --- */}
       <Space size={20}>
+        {/* Bình luận */}
         <Badge count={comments.length} dot>
           <MailOutlined
             style={{ fontSize: 22, cursor: "pointer" }}
             onClick={() => setCommentsOpen(true)}
           />
         </Badge>
+
+        {/* Đơn hàng */}
         <Badge count={orders.length} dot>
           <BellFilled
             style={{ fontSize: 22, cursor: "pointer" }}
@@ -147,7 +156,7 @@ function AppHeader() {
 
       {/* --- DRAWER COMMENTS --- */}
       <Drawer
-        title="Bình luận mới"
+        title="💬 Bình luận mới"
         open={commentsOpen}
         onClose={() => setCommentsOpen(false)}
         maskClosable
@@ -160,7 +169,7 @@ function AppHeader() {
 
       {/* --- DRAWER NOTIFICATIONS --- */}
       <Drawer
-        title="Thông báo đơn hàng"
+        title="🔔 Thông báo đơn hàng"
         open={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
         maskClosable
@@ -169,7 +178,8 @@ function AppHeader() {
           dataSource={orders}
           renderItem={(item) => (
             <List.Item>
-              <Typography.Text strong>{item.title}</Typography.Text> đã được đặt hàng!
+              <Typography.Text strong>{item.title}</Typography.Text> đã được đặt
+              hàng!
             </List.Item>
           )}
         />
@@ -191,7 +201,9 @@ function AppHeader() {
           <Typography.Title level={4} style={{ marginTop: 10 }}>
             Doãn Bá Min
           </Typography.Title>
-          <Typography.Text type="secondary">Quản trị hệ thống</Typography.Text>
+          <Typography.Text type="secondary">
+            Quản trị hệ thống
+          </Typography.Text>
         </div>
 
         <Form layout="vertical">

@@ -6,7 +6,7 @@ function AdminFooter() {
   return (
     <div className="admin-footer">
       <div className="admin-left">
-        <span>© {new Date().getFullYear()} L-M Dashboard</span>
+        <span>© {new Date().getFullYear()} L-M Shop</span>
         <span className="muted"> — Internal Admin Panel</span>
       </div>
       <div className="admin-right">

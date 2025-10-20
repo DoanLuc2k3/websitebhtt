@@ -42,7 +42,7 @@ function Inventory() {
     });
   };
 
-  // ✅ Mở modal thêm mới hoặc chỉnh sửa
+  //  Mở modal thêm mới hoặc chỉnh sửa
   const openModal = (record = null) => {
     setEditingProduct(record);
     if (record) form.setFieldsValue(record);
@@ -50,13 +50,13 @@ function Inventory() {
     setIsModalOpen(true);
   };
 
-  // ✅ Đóng modal
+  //  Đóng modal
   const closeModal = () => {
     setEditingProduct(null);
     setIsModalOpen(false);
   };
 
-  // ✅ Thêm hoặc cập nhật sản phẩm
+  //  Thêm hoặc cập nhật sản phẩm
   const handleSave = () => {
     form.validateFields().then((values) => {
       if (editingProduct) {
@@ -80,7 +80,7 @@ function Inventory() {
     });
   };
 
-  // ✅ Xóa sản phẩm
+  //  Xóa sản phẩm
   const handleDelete = (id) => {
     setDataSource((prev) => prev.filter((item) => item.id !== id));
     message.success("Xóa sản phẩm thành công!");
@@ -117,8 +117,8 @@ function Inventory() {
         >
           <DatabaseOutlined
             style={{
-              color: "#fff",
-              backgroundColor: "#722ed1",
+             color: "#fff",
+              backgroundColor: "orange",
               borderRadius: "50%",
               padding: 10,
               fontSize: 22,
@@ -133,7 +133,7 @@ function Inventory() {
           icon={<PlusOutlined />}
           style={{
             borderRadius: 8,
-            backgroundColor: "#722ed1",
+            backgroundColor: "#0a75bbff",
           }}
           onClick={() => openModal()}
         >

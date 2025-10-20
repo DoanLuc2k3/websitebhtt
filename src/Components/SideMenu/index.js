@@ -1,8 +1,10 @@
 import {
   AppstoreOutlined,
+  QuestionCircleOutlined,
   ShopOutlined,
   ShoppingCartOutlined,
   UserOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { useEffect, useState } from "react";
@@ -31,24 +33,38 @@ function SideMenu() {
         items={[
           {
             label: "Tổng quan",
-            icon: <AppstoreOutlined />,
+            icon: <AppstoreOutlined style={{color: "green"}} />,
             key: "/",
           },
+         
           {
-            label: "Quản lý kho",
-            key: "/inventory",
-            icon: <ShopOutlined />,
-          },
+    label: "Quản lý kho",
+    key: "/inventory",
+    icon: <ShopOutlined style={{ color: "#fa8c16" }} />, // Cam
+  },
           {
             label: "Đơn hàng",
             key: "/orders",
-            icon: <ShoppingCartOutlined />,
+            icon: <ShoppingCartOutlined style={{color: "red"}}/>,
+          },
+            {
+           label: "Nhân viên",
+  key: "/staffs",
+  // ✅ Sử dụng TeamOutlined với màu sắc tùy chỉnh
+  icon: <TeamOutlined style={{ color: "Teal" }} />,
           },
           {
             label: "Khách hàng",
             key: "/customers",
-            icon: <UserOutlined />,
+            icon: <UserOutlined style={{color : "black"}}/>,
           },
+          {
+            label: "Hỗ trợ",
+            key: "/help",
+            icon: <QuestionCircleOutlined style={{color: "blue"}}/>,
+            style: { marginTop: 'autp' } 
+          },
+         
         ]}
       ></Menu>
     </div>

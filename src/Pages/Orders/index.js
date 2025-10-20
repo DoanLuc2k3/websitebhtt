@@ -35,7 +35,7 @@ function Orders() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
-  // 🟣 Gọi API và thêm dữ liệu mô phỏng trạng thái + ngày đặt
+  //  Lấy dữ liệu đơn hàng mô phỏng
   useEffect(() => {
     setLoading(true);
     getOrders().then((res) => {
@@ -60,9 +60,9 @@ function Orders() {
     });
   }, []);
 
-  
+  //  Lọc dữ liệu theo tìm kiếm và trạng thái
   useEffect(() => {
-    let filtered = dataSource.filter((item) => {
+    const filtered = dataSource.filter((item) => {
       const matchName = item.title
         .toLowerCase()
         .includes(searchValue.toLowerCase());
@@ -73,7 +73,7 @@ function Orders() {
     setFilteredData(filtered);
   }, [searchValue, filterStatus, dataSource]);
 
- 
+  //  Màu trạng thái
   const getStatusColor = (status) => {
     switch (status) {
       case "Đã giao":
@@ -87,14 +87,13 @@ function Orders() {
     }
   };
 
-  
+  //  Modal Thêm đơn hàng
   const showModal = () => setIsModalOpen(true);
   const handleCancel = () => {
     setIsModalOpen(false);
     form.resetFields();
   };
 
-  
   const handleAddOrder = (values) => {
     const total = values.price * values.quantity;
     const newOrder = {
@@ -111,7 +110,7 @@ function Orders() {
     handleCancel();
   };
 
-
+  //  Cấu hình bảng
   const columns = [
     {
       title: "STT",
@@ -201,6 +200,7 @@ function Orders() {
     },
   ];
 
+  //  Giao diện chính
   return (
     <Space
       size={20}
@@ -212,7 +212,7 @@ function Orders() {
         borderRadius: "12px",
       }}
     >
-  
+      {/* Tiêu đề + nút thêm */}
       <Flex justify="space-between" align="center">
         <Title
           level={3}
@@ -227,7 +227,7 @@ function Orders() {
           <ShoppingCartOutlined
             style={{
               color: "#fff",
-              backgroundColor: "purple",
+              backgroundColor: "red",
               borderRadius: "50%",
               padding: 10,
               fontSize: 22,
@@ -243,14 +243,14 @@ function Orders() {
           onClick={showModal}
           style={{
             borderRadius: 8,
-            background: "purple",
+            backgroundColor: "#0a75bbff",
           }}
         >
           Thêm đơn hàng
         </Button>
       </Flex>
 
-    
+      {/* Thanh tìm kiếm + bộ lọc */}
       <Flex justify="space-between" align="center">
         <Input
           prefix={<SearchOutlined />}
@@ -272,15 +272,15 @@ function Orders() {
         </Select>
       </Flex>
 
-      {/* --- Bảng dữ liệu --- */}
-      <div
+      {/* Bảng đơn hàng */}
+      <Card
+        variant="borderless"
         style={{
-          width: "100%",
+          borderRadius: 12,
+          boxShadow: "0 4px 10px rgba(0,0,0,0.06)",
           background: "#fff",
-          padding: "16px 20px",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
         }}
+        bodyStyle={{ padding: "16px 20px" }}
       >
         <Table
           loading={loading}
@@ -293,16 +293,12 @@ function Orders() {
             pageSize: 5,
             showSizeChanger: false,
           }}
-          style={{
-            width: "100%",
-            borderRadius: "10px",
-          }}
+          style={{ width: "100%", borderRadius: "10px" }}
         />
-      </div>
+      </Card>
 
-      {/* --- Modal thêm đơn hàng --- */}
+      {/* Modal thêm đơn hàng */}
       <Modal
-       style={{paddingBottom:'200px'}}
         title="Thêm đơn hàng mới"
         open={isModalOpen}
         onCancel={handleCancel}
@@ -320,7 +316,9 @@ function Orders() {
           <Form.Item
             name="customer"
             label="Tên khách hàng"
-            rules={[{ required: true, message: "Vui lòng nhập tên khách hàng!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập tên khách hàng!" },
+            ]}
           >
             <Input placeholder="Nhập tên khách hàng" />
           </Form.Item>

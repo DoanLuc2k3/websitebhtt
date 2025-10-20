@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Space,
@@ -9,17 +10,23 @@ import {
   Select,
   Badge,
   Flex,
+  Button,
+  Tooltip,
 } from "antd";
-import { useEffect, useState } from "react";
 import { getCustomers } from "../../API";
 import {
   UserOutlined,
   SearchOutlined,
   EnvironmentOutlined,
+  UserAddOutlined,
+  PhoneOutlined,
+  EditOutlined, 
+  HistoryOutlined, 
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+const { Search } = Input;
 
 function Customers() {
   const [loading, setLoading] = useState(false);
@@ -28,17 +35,21 @@ function Customers() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedCity, setSelectedCity] = useState("Tất cả");
 
-  // 🟣 Gọi API lấy danh sách khách hàng
   useEffect(() => {
     setLoading(true);
     getCustomers().then((res) => {
-      setDataSource(res.users);
-      setFilteredData(res.users);
+      // Giả lập thêm trường totalOrders và joinDate
+      const usersData = (res.users || []).map((user, index) => ({
+        ...user,
+        totalOrders: Math.floor(Math.random() * 50),
+        joinDate: new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN'),
+      }));
+      setDataSource(usersData);
+      setFilteredData(usersData);
       setLoading(false);
     });
   }, []);
 
-  // 🟣 Lọc dữ liệu theo tên và thành phố
   useEffect(() => {
     let filtered = dataSource.filter((item) => {
       const fullName = `${item.firstName} ${item.lastName}`.toLowerCase();
@@ -50,59 +61,64 @@ function Customers() {
     setFilteredData(filtered);
   }, [searchValue, selectedCity, dataSource]);
 
-  // 🟣 Lấy danh sách thành phố
   const cities = [
     "Tất cả",
     ...new Set(dataSource.map((item) => item.address.city)),
   ];
 
-  // 🟣 Thêm trạng thái hoạt động ngẫu nhiên
-  const getStatus = () => (Math.random() > 0.5 ? "online" : "offline");
+  // Hàm tạo trạng thái hoạt động ngẫu nhiên
+  const getStatus = () => (Math.random() > 0.7 ? "online" : "offline");
 
-  // 🟣 Cột bảng
+  // Cột bảng
   const columns = [
     {
       title: "Khách hàng",
       dataIndex: "firstName",
       key: "name",
+      width: '25%',
       render: (text, record) => (
-        <Space>
+        <Space size={12}>
           <Badge
             dot
             color={getStatus() === "online" ? "green" : "gray"}
-            offset={[-5, 40]}
+            offset={[-4, 48]}
           >
             <Avatar
               src={record.image}
-              size={48}
+              size={52}
               icon={<UserOutlined />}
-              style={{ border: "1px solid #eee" }}
+              style={{ border: "1px solid #ddd" }}
             />
           </Badge>
-          <div>
-            <Text strong style={{ color: "#333" }}>
+          <Space direction="vertical" size={0}>
+            <Text strong style={{ color: "#2c3e50" }}>
               {record.firstName} {record.lastName}
             </Text>
-            <br />
             <Text type="secondary" style={{ fontSize: 13 }}>
               {record.email}
             </Text>
-          </div>
+            <Tag 
+                size="small"
+                color={getStatus() === "online" ? "blue-inverse" : "default"}
+                style={{ marginTop: 4, width: 'fit-content', fontWeight: 500 }}
+            >
+                {getStatus() === "online" ? "Đang hoạt động" : "Ngoại tuyến"}
+            </Tag>
+          </Space>
         </Space>
       ),
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
+      key: "phone",
+      align: 'center',
+      width: '15%',
       render: (phone) => (
         <Tag
-          color="blue"
-          style={{
-            fontWeight: 500,
-            borderRadius: 6,
-            fontSize: 13,
-            padding: "2px 10px",
-          }}
+            color="geekblue"
+            icon={<PhoneOutlined />}
+            style={{ fontWeight: 600, borderRadius: 6, fontSize: 13, padding: "4px 10px" }}
         >
           {phone}
         </Tag>
@@ -111,25 +127,55 @@ function Customers() {
     {
       title: "Thành phố",
       dataIndex: "address",
+      key: "city",
+      width: '15%',
       render: (address) => (
         <Space>
           <EnvironmentOutlined style={{ color: "#1677ff" }} />
-          <Text>{address.city}</Text>
+          <Text strong>{address.city}</Text>
         </Space>
       ),
     },
     {
-      title: "Địa chỉ cụ thể",
-      dataIndex: "address",
-      render: (address) => (
-        <Text style={{ color: "#666" }}>{address.address}</Text>
-      ),
+      title: "Tổng đơn hàng",
+      dataIndex: "totalOrders",
+      key: "orders",
+      align: 'center',
+      width: '15%',
+      render: (orders) => (
+        <Text strong style={{ color: orders > 10 ? '#ffc53d' : '#333' }}>{orders}</Text>
+      )
     },
+    {
+      title: "Ngày tham gia",
+      dataIndex: "joinDate",
+      key: "joinDate",
+      width: '15%',
+      render: (date) => (
+        <Text type="secondary">{date}</Text>
+      )
+    },
+    {
+        title: "Hành động",
+        key: "action",
+        width: '15%',
+        align: 'center',
+        render: (record) => (
+            <Space size="small">
+                <Tooltip title="Chỉnh sửa hồ sơ">
+                    <Button icon={<EditOutlined />} type="text" size="small" />
+                </Tooltip>
+                <Tooltip title="Xem lịch sử mua hàng">
+                    <Button icon={<HistoryOutlined />} type="text" size="small" />
+                </Tooltip>
+            </Space>
+        )
+    }
   ];
 
   return (
     <Space
-      size={20}
+      size={24}
       direction="vertical"
       style={{
         width: "100%",
@@ -138,81 +184,72 @@ function Customers() {
         borderRadius: "12px",
       }}
     >
-      {/* 🟣 Tiêu đề */}
-      <Flex justify="space-between" align="center">
-        <Title
-          level={3}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            color: "#262626",
-            marginBottom: 0,
-          }}
-        >
-          <UserOutlined
-            style={{
-              color: "#fff",
-              backgroundColor: "purple",
-              borderRadius: "50%",
-              padding: 10,
-              fontSize: 22,
-              boxShadow: "0 3px 6px rgba(128,0,128,0.3)",
-            }}
-          />
-          <span style={{ fontWeight: 600 }}>Danh sách khách hàng</span>
-        </Title>
-
-        {/* 🟣 Thanh tìm kiếm + Lọc */}
-        <Space>
-          <Input
-            prefix={<SearchOutlined />}
-            placeholder="Tìm khách hàng..."
-            style={{
-              width: 220,
-              borderRadius: 8,
-            }}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-          <Select
-            value={selectedCity}
-            onChange={(value) => setSelectedCity(value)}
-            style={{ width: 160, borderRadius: 8 }}
-          >
-            {cities.map((city) => (
-              <Option key={city} value={city}>
-                {city}
-              </Option>
-            ))}
-          </Select>
-        </Space>
-      </Flex>
-
-      {/* 🟣 Bảng dữ liệu khách hàng */}
+      
+      {/* --- HEADER & ACTION BAR --- */}
+      <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+          <Flex justify="space-between" align="center">
+            {/* Tiêu đề */}
+            <Title
+              level={3}
+              style={{ display: "flex", alignItems: "center", gap: "12px", color: "#262626", margin: 0 }}
+            >
+                <UserOutlined style={{ color: "#fff", backgroundColor: "#722ed1", borderRadius: "50%", padding: 10, fontSize: 22, boxShadow: "0 3px 6px rgba(114,46,209,0.3)" }} />
+                <span style={{ fontWeight: 700 }}>
+                    {/* ✅ FIX: Đã xóa {filteredData.length} */}
+                    Danh sách khách hàng 
+                </span>
+            </Title>
+    
+            {/* Công cụ (Search, Filter, Add) */}
+            <Space size="middle">
+              <Search
+                placeholder="Tìm khách hàng..."
+                style={{ width: 220 }}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                enterButton={<SearchOutlined />}
+              />
+              
+              <Select
+                value={selectedCity}
+                onChange={(value) => setSelectedCity(value)}
+                style={{ width: 160 }}
+                placeholder="Lọc theo Thành phố"
+              >
+                {cities.map((city) => (
+                  <Option key={city} value={city}>{city}</Option>
+                ))}
+              </Select>
+              
+              <Button type="primary" icon={<UserAddOutlined />} style={{ fontWeight: 600 }}>
+                Thêm mới
+              </Button>
+            </Space>
+          </Flex>
+      </Card>
+      
+      {/* --- Bảng dữ liệu khách hàng --- */}
       <Card
+        bordered={false}
         style={{
           borderRadius: 12,
           boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-          border: "1px solid #f0f0f0",
-          background: "#fff",
         }}
-        bodyStyle={{ padding: "20px 24px" }}
+        bodyStyle={{ padding: "0" }}
       >
         <Table
           loading={loading}
-          size="middle"
+          size="large"
           columns={columns}
           dataSource={filteredData}
           rowKey="id"
           pagination={{
             position: ["bottomCenter"],
-            pageSize: 5,
-            showSizeChanger: false,
+            pageSize: 8,
+            showSizeChanger: false, 
+            showTotal: false,        
           }}
-          style={{
-            borderRadius: 8,
-          }}
+          scroll={{ x: 'max-content' }}
         />
       </Card>
     </Space>
