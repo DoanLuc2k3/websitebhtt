@@ -59,8 +59,8 @@ const mockRevenueData = {
         { name: 'Phụ kiện', sales: 18000, count: 90 },
     ],
     growthRate: 12.5,
-    newCustomers: 45,
-    totalRevenue: 805000,
+    newCustomers: 100000000,
+    totalRevenue: 805000000,
 };
 
 // =========================================================
@@ -250,7 +250,7 @@ function TopCustomersTable() {
             title: '#',
             dataIndex: 'index',
             key: 'index',
-            render: (text, record, index) => <Text strong style={{ color: index < 3 ? '#ffc53d' : '#333' }}>{index + 1}</Text>,
+            render: (text, record, index) => <Text strong style={{ color: index < 3 ? '#850a0aff' : '#333' }}>{index + 1}</Text>,
             width: 50,
         },
         {
@@ -264,12 +264,12 @@ function TopCustomersTable() {
             dataIndex: 'totalSpending',
             key: 'spending',
             align: 'right',
-            render: (spending) => <Text strong style={{ color: '#eb2f96' }}>{spending.toLocaleString('vi-VN')}</Text>,
+            render: (spending) => <Text strong style={{ color: '#850a0aff' }}>{spending.toLocaleString('vi-VN')}</Text>,
         },
     ];
 
     return (
-        <Card title={<Space><TrophyOutlined style={{ color: '#ffc53d' }} /> Khách hàng chi tiêu cao</Space>} bordered={false} style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+        <Card title={<Space><TrophyOutlined style={{ color: '#ffc53d' }} /> Khách hàng chi tiêu cao</Space>} bordered={false} style={{ borderRadius: 16, boxShadow: "0 4px 12px red" }}>
             <Table
                 loading={loading}
                 columns={columns}
@@ -342,7 +342,7 @@ function RecentOrdersTable() {
         <Card 
             title={<Space><ShoppingCartOutlined /> Đơn hàng gần đây</Space>} 
             bordered={false} 
-            style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)", height: '100%' }}
+            style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)", height: '100%'}}
         >
             <Table
                 loading={loading}

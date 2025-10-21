@@ -1,9 +1,10 @@
 import {
-  BellFilled,
-  MailOutlined,
+  BellOutlined, 
+  MailOutlined, // ✅ Đảm bảo MailOutlined đã được import
   UserOutlined,
   EditOutlined,
   LogoutOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -32,6 +33,9 @@ function AppHeader() {
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Màu sắc chủ đạo (Giả định)
+  const PRIMARY_COLOR = "#1677ff"; 
+
   // Lấy dữ liệu bình luận + đơn hàng
   useEffect(() => {
     getComments().then((res) => setComments(res.comments || []));
@@ -41,12 +45,12 @@ function AppHeader() {
   // Xử lý đăng xuất
   const handleLogout = () => {
     localStorage.removeItem("adminLogin");
-    message.success("Quay lại thành công!");
+    message.success("Đăng xuất thành công!");
     setAdminOpen(false);
     navigate("/");
   };
 
-  // Menu dropdown của Admin
+  // Menu dropdown của Admin (Giữ nguyên)
   const adminMenu = {
     items: [
       {
@@ -69,6 +73,20 @@ function AppHeader() {
       },
     ],
   };
+  
+  // Hàm xử lý Hover cho Button Icon
+  const handleIconHover = (e, isEntering, iconColor = '#555') => {
+      const target = e.currentTarget;
+      const icon = target.querySelector('.anticon');
+      
+      if (isEntering) {
+          target.style.backgroundColor = PRIMARY_COLOR;
+          if (icon) icon.style.color = 'white';
+      } else {
+          target.style.backgroundColor = '#f5f5f5';
+          if (icon) icon.style.color = iconColor;
+      }
+  };
 
   return (
     <div
@@ -83,59 +101,62 @@ function AppHeader() {
         borderRadius: 8,
       }}
     >
-      {/* --- LOGO --- */}
+      {/* --- LOGO --- (Giữ nguyên) */}
       <Flex align="center" gap={10}>
         <Typography.Title level={3} style={{ margin: 0 }}>
           <img
-            src="https://i.imgur.com/sf3D9V9.png" // ← Link ảnh logo
+            src="https://i.imgur.com/sf3D9V9.png"
             alt="Logo"
-            style={{
-              height: 48,
-              objectFit: "contain",
-              display: "block",
-            }}
+            style={{ height: 48, objectFit: "contain", display: "block" }}
           />
         </Typography.Title>
       </Flex>
 
-      {/* --- SEARCH --- */}
-      <Input.Search
+      {/* --- SEARCH --- (Giữ nguyên) */}
+      <Input
         placeholder="Tìm kiếm sản phẩm..."
-        style={{
-          width: 360,
-          borderRadius: 20,
-          background: "#f9fafc",
-          border: "1px solid #d9d9d9",
-        }}
+        style={{ width: 320, borderRadius: 20, background: "#f9fafc" }}
+        prefix={<SearchOutlined style={{ color: '#999' }} />}
         allowClear
       />
 
       {/* --- ICONS + ADMIN --- */}
-      <Space size={20}>
-        {/* Bình luận */}
-        <Badge count={comments.length} dot>
-          <MailOutlined
-            style={{ fontSize: 22, cursor: "pointer" }}
+      <Space size={16}>
+        
+        {/* Bình luận (Mail) */}
+        <Badge count={comments.length} offset={[-2, 2]}> {/* ✅ Đã xóa dot */}
+          <Button
+            type="default"
+            shape="circle"
+            icon={<MailOutlined style={{ fontSize: 20, color: '#555' }} />}
             onClick={() => setCommentsOpen(true)}
+            style={{ backgroundColor: '#f5f5f5', borderColor: 'transparent', transition: 'all 0.3s' }}
+            onMouseEnter={(e) => handleIconHover(e, true)}
+            onMouseLeave={(e) => handleIconHover(e, false)}
           />
         </Badge>
 
-        {/* Đơn hàng */}
-        <Badge count={orders.length} dot>
-          <BellFilled
-            style={{ fontSize: 22, cursor: "pointer" }}
+        {/* Thông báo (Bell) */}
+        <Badge count={orders.length} offset={[-2, 2]}> {/* ✅ Đã xóa dot */}
+          <Button
+            type="default"
+            shape="circle"
+            icon={<BellOutlined style={{ fontSize: 20, color: '#555' }} />}
             onClick={() => setNotificationsOpen(true)}
+            style={{ backgroundColor: '#f5f5f5', borderColor: 'transparent', transition: 'all 0.3s' }}
+            onMouseEnter={(e) => handleIconHover(e, true)}
+            onMouseLeave={(e) => handleIconHover(e, false)}
           />
         </Badge>
 
-        {/* --- ADMIN MENU --- */}
+        {/* --- ADMIN MENU --- (Giữ nguyên) */}
         <Dropdown menu={adminMenu} placement="bottomRight" arrow>
           <Space
             style={{
               cursor: "pointer",
               background: "#f5f7fa",
               borderRadius: 25,
-              padding: "6px 12px",
+              padding: "4px 4px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               transition: "all 0.2s ease",
             }}
@@ -144,17 +165,15 @@ function AppHeader() {
           >
             <Avatar
               src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
-              size="small"
+              size="default"
               icon={<UserOutlined />}
+              style={{ marginRight: 0 }}
             />
-            <Typography.Text strong style={{ color: "#333" }}>
-              Admin
-            </Typography.Text>
           </Space>
         </Dropdown>
       </Space>
 
-      {/* --- DRAWER COMMENTS --- */}
+      {/* --- DRAWER COMMENTS & NOTIFICATIONS --- (Giữ nguyên) */}
       <Drawer
         title="💬 Bình luận mới"
         open={commentsOpen}
@@ -167,7 +186,6 @@ function AppHeader() {
         />
       </Drawer>
 
-      {/* --- DRAWER NOTIFICATIONS --- */}
       <Drawer
         title="🔔 Thông báo đơn hàng"
         open={notificationsOpen}
@@ -185,7 +203,7 @@ function AppHeader() {
         />
       </Drawer>
 
-      {/* --- MODAL ADMIN PROFILE --- */}
+      {/* --- MODAL ADMIN PROFILE --- (Giữ nguyên) */}
       <Modal
         title="👨‍💼 Thông tin Quản trị viên"
         open={adminOpen}
