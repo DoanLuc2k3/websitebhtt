@@ -279,7 +279,7 @@ const SupportDashboard = () => {
       >
         <Paragraph style={{ margin: 0 }}>
           <Text type="secondary" style={{ display: 'block' }}>Email Hỗ trợ</Text>
-          <Text strong><MailOutlined style={{ marginRight: 6 }} /> techsupport@yourshop.com</Text>
+          <Text strong><MailOutlined style={{ marginRight: 6 }} /> bamin.com</Text>
         </Paragraph>
       </Card>
     </Col>

@@ -179,15 +179,15 @@ function Inventory() {
               ),
             },
             {
-              title: "Giá ($)",
-              dataIndex: "price",
-              render: (value) => (
-                <Typography.Text style={{ color: "#52c41a", fontWeight: 500 }}>
-                  ${value?.toLocaleString()}
-                </Typography.Text>
-              ),
-              width: 120,
-            },
+  title: "Giá (VND)",
+  dataIndex: "price",
+  render: (value) => (
+    <Typography.Text style={{ color: "#000000ff", fontWeight: 500 }}>
+      {value?.toLocaleString('vi-VN')} VNĐ
+    </Typography.Text>
+  ),
+  width: 150,
+},
             {
               title: "Đánh giá",
               dataIndex: "rating",
@@ -199,7 +199,7 @@ function Inventory() {
                   style={{ fontSize: 16, color: "#faad14" }}
                 />
               ),
-              width: 140,
+              width: 200,
             },
             {
               title: "Tồn kho",
@@ -289,7 +289,7 @@ function Inventory() {
           </Form.Item>
           <Form.Item
             name="price"
-            label="Giá ($)"
+            label="Giá (VND)"
             rules={[{ required: true, message: "Nhập giá sản phẩm!" }]}
           >
             <InputNumber

@@ -4,7 +4,7 @@ const sampleProducts = [
   {
     id: 1,
     title: "Áo GuCi",
-    price: 10000000,
+    price: 10000,
     discountedPrice: 1000000,
     quantity: 2,
     total: 100000,
@@ -17,7 +17,7 @@ const sampleProducts = [
   {
     id: 2,
     title: "Túi Xách",
-    price: 100000000,
+    price: 100000,
     discountedPrice: 1000000,
     quantity: 1,
     total: 10000000,
@@ -30,7 +30,7 @@ const sampleProducts = [
   {
     id: 3,
     title: "Giày Sneakers",
-    price: 2000000,
+    price: 20000,
     discountedPrice: 200000,
     quantity: 1,
     total: 200000000,
@@ -43,7 +43,7 @@ const sampleProducts = [
   {
 id: 4,
     title: "Áo Khoác",
-    price: 4000000,
+    price: 4000,
     discountedPrice: 200000,
     quantity: 1,
     total: 200000000,

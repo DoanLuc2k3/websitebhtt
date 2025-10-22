@@ -141,3 +141,29 @@ box-shadow: 0 -1px 8px rgba(0,0,0,0.03) inset;
         gap: 8px;
     }
 }
+/* File CSS cần cập nhật */
+
+/* Hiệu ứng 1: Lộ diện (Thời gian giữ nguyên 0.5s) */
+@keyframes revealAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hiệu ứng 2: Di chuyển lặp lại (Tăng thời gian lên 4s) */
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px); 
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
