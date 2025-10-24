@@ -65,7 +65,7 @@ const mockRevenueData = {
         { name: 'Giày Sneaker', sales: 35000, count: 150 },
         { name: 'Phụ kiện', sales: 18000, count: 90 },
     ],
-    growthRate: 12,
+    growthRate: 9,
     newCustomers: 1000000,
     totalRevenue: 10000,
 };
