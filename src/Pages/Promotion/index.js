@@ -8,9 +8,9 @@ import {
     GiftOutlined, TagOutlined, CrownOutlined, 
     PlusOutlined, EditOutlined, DeleteOutlined, SettingOutlined, 
     UploadOutlined, 
-    FireOutlined // Icon nổi bật cho khuyến mãi
+    FireOutlined 
 } from '@ant-design/icons';
-import moment from 'moment'; // Yêu cầu đã cài đặt 'moment'
+import moment from 'moment'; 
 
 const { Content } = Layout;
 const { Title } = Typography;

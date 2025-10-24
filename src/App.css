@@ -20,7 +20,7 @@ html, body, #root {
     /* ĐẨY NỘI DUNG XUỐNG DƯỚI HEADER (50px) */
     padding-top: 50px; 
     /* ĐẨY NỘI DUNG LÊN TRÊN FOOTER (50px) */
-    padding-bottom: 50px; /* Giữ Footer 50px như cũ */
+    padding-bottom: 50px; 
 }
 .AppHeader{
     height: auto; 
@@ -37,7 +37,7 @@ html, body, #root {
     /* 🔴 ĐỊNH NGHĨA CỐ ĐỊNH HOÀN HẢO */
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); 
-    position: fixed; /* Header CỐ ĐỊNH TUYỆT ĐỐI */
+    position: fixed; 
     top: 0; 
     left: 0; 
     z-index: 1000; 
@@ -83,8 +83,8 @@ html, body, #root {
     gap: 24px;
     padding: 8px 16px;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    background: #ffffff; /* Đảm bảo background là màu trắng */
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.05); /* Bóng đổ từ dưới lên */
+    background: #ffffff; 
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05); 
     
     /* FOOTER CỐ ĐỊNH */
     position: fixed;
@@ -100,35 +100,43 @@ html, body, #root {
     justify-content: flex-start;
     align-items: flex-start;
     background-color: rgba(0, 0, 0, 0.05) ;
+    
+    /* Container này phải có chiều cao cố định để nội dung bên trong (PageContent) cuộn */
+    height: calc(100vh - 100px); /* 100vh - 50px Header - 50px Footer */
 }
 
 /* ✅ ĐIỀU CHỈNH SIDE MENU: FIXED, CÂN CHỈNH DƯỚI HEADER & KHÔNG CHE FOOTER */
 .SideMenu{
     position: fixed !important; 
-    /* Bắt đầu ngay dưới Header (50px) */
     top: 50px; 
     left: 0; 
     z-index: 999; 
-    
-    /* Chiếm hết chiều cao còn lại của màn hình TRỪ HEADER (50px) VÀ FOOTER (50px) */
     height: calc(100vh - 50px - 50px); 
     width: 220px;
     box-sizing: border-box;
-
-    /* ✅ SỬA: Tăng vùng đệm an toàn lên 25px cho hiệu ứng hover */
     padding-top: 25px; 
+    
+    /* SỬA LỖI CUỘN: Thêm cuộn Y cho SideMenu nếu menu quá dài */
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width 0.2s ease-out; /* Thêm hiệu ứng chuyển động mượt */
 }
 
-/* ✅ LỚP ĐỆM CHO NỘI DUNG TRANG KHI DÙNG fixed SIDEBAR */
+/* ✅ LỚP ĐỆM CHO NỘI DUNG TRANG VÀ CHO PHÉP CUỘN */
 .PageContent{
     /* Đảm bảo nội dung không bị Side Menu Fixed che */
     margin-left: 220px; 
+    transition: margin-left 0.2s ease-out; /* Thêm hiệu ứng chuyển động mượt */
     
     flex: 1 1 auto;
     padding: 20px 24px;
     box-sizing: border-box;
     max-width: none;
     background: linear-gradient(90deg, #fbfbfd 0%, #f3f8fc 100%); 
+    
+    /* Thiết lập chiều cao 100% của container và cho phép cuộn nội dung */
+    height: 100%;
+    overflow-y: auto;
 }
 
 /* Ensure direct children of PageContent expand to fill space */
@@ -172,70 +180,97 @@ html, body, #root {
 }
 
 /* ========================================================= */
-/* --- RESPONSIVE HEADER --- */
+/* --- RESPONSIVE (TỐI ƯU HOÀN TOÀN) --- */
 /* ========================================================= */
 
-/* Màn hình Tablet (Max 768px): Thanh Search xuống dòng và tràn đầy */
+/* --------------------------------------------------------- */
+/* Màn hình Tablet (MAX 768px): THU GỌN SIDE MENU (80px) & Tối ưu Footer */
+/* --------------------------------------------------------- */
 @media (max-width: 768px) {
-    /* Đảm bảo Header Fixed vẫn giữ chiều cao 50px khi resize */
+    /* ĐẢM BẢO HEADER LUÔN GỌN (50px) VÀ 1 DÒNG */
     .AppHeader {
-        flex-wrap: wrap; 
-        padding: 3px 15px; /* Giữ padding 3px */
-        justify-content: space-between; 
-        min-width: 100%; 
+        flex-wrap: nowrap; /* Tránh Header bị wrap */
+        padding: 3px 15px;
+        min-width: 100%;
     }
-
-    /* Đặt thanh search ở dòng mới và chiếm toàn bộ chiều rộng */
     .AppHeader .header-center-search {
-        order: 3; 
-        flex: 1 0 100%; 
-        max-width: 100%; 
-        margin: 10px 0 0 0; 
-        min-width: 0; 
+        order: unset; /* Trả lại vị trí mặc định */
+        flex: 1 1 auto;
+        max-width: 500px;
+        margin: 0 15px; /* Giảm margin */
     }
     
-    /* ✅ CẬP NHẬT: Đẩy nội dung xuống xa hơn vì Header bị wrap và cao hơn */
-    .App{ padding-top: 90px; } 
+    /* Giữ nguyên padding và chiều cao cuộn 50px */
+    .App { padding-top: 50px; }
+    .SideMenuAndPageContent {
+        height: calc(100vh - 50px - 50px);
+    }
 
-    .AppHeader .header-left { order: 1; flex-grow: 0; margin-right: auto; }
-    .AppHeader .header-right { order: 2; flex-grow: 0; }
+    /* ➡️ THU GỌN SIDE MENU */
+    .SideMenu {
+        width: 80px; /* Chiều rộng thu gọn */
+    }
+
+    /* ➡️ CẬP NHẬT KHOẢNG ĐỆM NỘI DUNG */
+    .PageContent {
+        margin-left: 80px !important; /* Thêm !important cho Tablet */
+        padding: 20px 15px; /* Giảm padding ngang */
+    }
     
-    /* ✅ CẬP NHẬT: Điều chỉnh Side Menu Fixed tương ứng với padding-top mới */
-    .SideMenu { 
-        top: 90px; 
-        height: calc(100vh - 90px - 50px); /* Trừ cả chiều cao Footer MỚI */
-        padding-top: 25px; /* Giữ padding an toàn */
+    /* ➡️ CẢI THIỆN FOOTER (Tablet) */
+    .AppFooter {
+        justify-content: space-between; /* Dãn đều giữa các mục */
+        padding: 8px 15px; /* Tăng padding ngang một chút */
+        gap: 16px; 
+    }
+
+    /* ➡️ (Tùy chọn) Ẩn chữ trong Side Menu khi thu gọn */
+    .SideMenu .menu-item-text {
+        display: none; 
     }
 }
 
-/* Màn hình Mobile nhỏ (Max 576px): Ẩn thanh search */
+
+/* --------------------------------------------------------- */
+/* Màn hình Mobile nhỏ (MAX 576px): ẨN SIDE MENU HOÀN TOÀN & Tối ưu Footer Mobile */
+/* --------------------------------------------------------- */
 @media (max-width: 576px) {
+    
     /* Ẩn hẳn thanh search để ưu tiên không gian */
     .AppHeader .header-center-search {
         display: none; 
     }
     
-    /* Quay lại hiển thị 1 dòng (Logo | Icons) */
-    .AppHeader {
-        flex-wrap: nowrap;
-        padding: 3px 10px; /* Giữ padding 3px */
-        justify-content: space-between;
-    }
-
-    /* Đưa App padding và Side Menu top về 50px */
-    .App{ padding-top: 50px; } 
+    /* ➡️ ẨN SIDE MENU HOÀN TOÀN */
     .SideMenu { 
-        top: 50px; 
-        height: calc(100vh - 50px - 50px); /* Trừ cả chiều cao Footer MỚI */
-        padding-top: 25px; /* Giữ padding an toàn */
+        display: none !important; /* 🔴 FIX TRIỆT ĐỂ: Buộc Side Menu phải ẩn */
     }
 
+    /* ➡️ NỘI DUNG CHIẾM TOÀN BỘ CHIỀU RỘNG (FIX LỖI CHE NỘI DUNG) */
+    .PageContent {
+        margin-left: 0 !important; /* 🔴 FIX TRIỆT ĐỂ: Xóa lề */
+        padding: 10px; /* Giảm padding tối đa */
+    }
+
+    /* ➡️ CẢI THIỆN FOOTER (Mobile) */
+    .AppFooter {
+        justify-content: space-around; /* Dãn đều các mục */
+        gap: 10px; /* Giảm gap tối đa */
+        padding: 8px 5px; /* Giảm padding ngang tối đa */
+    }
+    
     /* Thu nhỏ logo và giảm khoảng cách icons */
-    .AppHeader .header-left img {
-        height: 38px !important;
+    .AppHeader .header-left img { height: 38px !important; }
+    .AppHeader .header-right { gap: 8px; }
+    
+    /* ➡️ TỐI ƯU NỘI DUNG BÊN TRONG (Mobile) */
+    /* Cho phép Ant Design Table cuộn ngang trên Mobile nếu cần */
+    .PageContent .ant-table-wrapper {
+        overflow-x: auto;
     }
-
-    .AppHeader .header-right {
-        gap: 8px;
+    
+    /* Giảm padding của Card body nếu cần */
+    .PageContent .ant-card-body {
+        padding: 12px; 
     }
 }

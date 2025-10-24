@@ -31,7 +31,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // =================================================================
-// --- MOCK API DATA (Giữ nguyên) ---
+// --- MOCK API DATA  ---
 // =================================================================
 
 const getComments = () =>
@@ -126,7 +126,7 @@ function AppHeader() {
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     
-    // Logic cuộn đã được loại bỏ để Header cố định tuyệt đối
+    
 
     const navigate = useNavigate();
     const PRIMARY_COLOR = "#1677ff";
@@ -305,7 +305,7 @@ function AppHeader() {
                 </Popover>
             </Space>
 
-            {/* DRAWER VÀ MODAL (Giữ nguyên) */}
+            {/* DRAWER VÀ MODAL */}
             <Drawer title="📩 Bình luận mới" open={commentsOpen} onClose={() => setCommentsOpen(false)} maskClosable>
                 <List dataSource={comments} renderItem={(item) => <List.Item>{item.body}</List.Item>} />
             </Drawer>
@@ -319,7 +319,7 @@ function AppHeader() {
                     )}
                 />
             </Drawer>
-            {/* MODAL ADMIN PROFILE (Giữ nguyên) */}
+            {/* MODAL ADMIN PROFILE  */}
             <Modal title="👨‍💼 Thông tin Quản trị viên" open={adminOpen} onCancel={() => setAdminOpen(false)} footer={null} centered>
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Avatar size={90} src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />
@@ -339,7 +339,7 @@ function AppHeader() {
                     </Space>
                 </Form>
             </Modal>
-            {/* MODAL SYSTEM SETTINGS (Giữ nguyên) */}
+            {/* MODAL SYSTEM SETTINGS */}
             <Modal
                 title="⚙️ Cài đặt hệ thống"
                 open={settingsOpen}
