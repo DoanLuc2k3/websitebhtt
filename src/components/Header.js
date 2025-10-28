@@ -1,74 +1,112 @@
-import React, { useState } from "react";
-import {Layout,Menu,Avatar,Dropdown,Space,Button,Typography, Input } from "antd";
-import { UserOutlined, DownOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  Layout,
+  Menu,
+  Avatar,
+  Dropdown,
+  Space,
+  Button,
+  Typography,
+} from "antd";
+import {
+  UserOutlined,
+  DownOutlined,
+  LoginOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import logo from '../assets/images/logo.jpg';
+import logo from "../assets/images/logo2.jpg";
+import "../App.css";
+import React, { useState } from "react";
+import Categories from "../pages/Categories";
+
+
+
 const { Header } = Layout;
 const { Title } = Typography;
- 
 
 const AppHeader = () => {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
+  const [showCategories, setShowCategories] = useState(false);
+
   const menuItems = [
-    { key: "home", label: "Trang chủ", onClick: () => navigate("/") },
-    { key: "product", label: "Sản phẩm", onClick: () => navigate("/products") },
-    { key: "about", label: "Giới thiệu", onClick: () => navigate("/about") },
-    { key: "contact", label: "Liên hệ", onClick: () => navigate("/contact") },
-  ];
+  { key: "home", label: "Home", onClick: () => navigate("/") },
+  {
+    key: "product",
+    label: (
+      <div
+        onMouseEnter={() => setShowCategories(true)}
+        onMouseLeave={() => setShowCategories(false)}
+        style={{ position: "relative" }}
+      >
+        <span
+          onClick={() => navigate("/products")}
+          style={{ cursor: "pointer" }}
+        >
+          Products
+        </span>
+
+        {showCategories && (
+          <div
+            onMouseEnter={() => setShowCategories(true)}
+            onMouseLeave={() => setShowCategories(false)}
+            style={{
+              position: "absolute",
+              left: "-100px",
+              top: "100%",
+              width: "400px",
+              zIndex: 1000,
+            }}
+          >
+            <Categories />
+          </div>
+        )}
+      </div>
+    ),
+  },
+  { key: "about", label: "About", onClick: () => navigate("/about") },
+  { key: "contact", label: "Contact", onClick: () => navigate("/contact") },
+];
+
+
   const userMenu = {
     items: [
-      { key: "1", label: "Hồ sơ", onClick: () => navigate("/profile") },
-      { key: "2", label: "Đăng xuất" },
+      { key: "1", label: "Profile", onClick: () => navigate("/profile") },
+      { key: "2", label: "Log out", onClick: () => navigate("/login") },
     ],
   };
+
   return (
     <Header
-      style={{ 
-        display: "flex", 
-        justifyContent: "space-between",
-        alignItems: "center",
-        background: "#fff",
-        padding: "0 24px",
-        boxShadow: "0 2px 8px #f0f1f2",
-      }}
+      onMouseLeave={() => setShowCategories(false)}
+      style={{ position: "relative" }}
     >
-      <Space>
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ width: 32, height: 32 }}
-        /> 
-        <Title level={4} style={{ margin: 0 }}>
-          Myshop
-        </Title>
-      </Space>
-      <Menu
-        mode="horizontal"
-        items={menuItems}
-        style={{ flex: 1, justifyContent: "center", borderBottom: "none" }}
-      />
-      <Space>
+      <div className="header-logo" onClick={() => navigate("/")}>
+        <img src={logo} alt="Logo" />
+        <Title level={4}>L-M Fashion</Title>
+      </div>
+      <Menu mode="horizontal" items={menuItems} />
+      <div className="header-right">
+        <ShoppingCartOutlined
+          style={{ fontSize: "24px", marginRight: "16px" }}
+          onClick={() => navigate("/cart")}
+        />
         <Dropdown menu={userMenu} trigger={["click"]}>
           <Space style={{ cursor: "pointer" }}>
             <Avatar icon={<UserOutlined />} />
             <DownOutlined />
           </Space>
         </Dropdown>
-        <Input
-          placeholder="Tìm sản phẩm..."
-          prefix={<SearchOutlined />}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onPressEnter={() => navigate(`/products?q=${encodeURIComponent(search)}`)}
-          style={{ width: 220, marginRight: 8 }}
-          allowClear
-        />
-        <Button onClick={() => navigate("/login")} type="primary" icon={<LoginOutlined />}>
-          Đăng nhập
+        <Button
+          onClick={() => navigate("/login")}
+          type="primary"
+          icon={<LoginOutlined />}
+        >
+          Login
         </Button>
-      </Space>
+      </div>
+     
     </Header>
   );
 };
+
 export default AppHeader;
