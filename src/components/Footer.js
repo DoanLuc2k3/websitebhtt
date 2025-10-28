@@ -21,7 +21,7 @@ import {
   TwitterSquareFilled,
   CloseCircleFilled,
 } from "@ant-design/icons";
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const AppFooter = () => {
   return (
     <div className="footer">

@@ -4,12 +4,8 @@ import cartImg from "../assets/images/cart-icon.png";
 import {
   Row,
   Col,
-  Card,
   Typography,
-  Spin,
-  Carousel,
   Button,
-  Rate,
   Badge,
   Checkbox,
   Space,

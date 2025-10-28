@@ -1,10 +1,10 @@
-import React from "react";
+
 import "../style/About.css";
 import {
-  Layout,
+ 
   Row,
   Col,
-  Breadcrumb as BreakCrum,
+ 
   Typography,
   Button,
   Divider,
@@ -12,8 +12,7 @@ import {
   Rate,
 } from "antd";
 import {
-  HomeOutlined,
-  ShoppingOutlined,
+ 
   ArrowRightOutlined,
   FacebookFilled,
   TwitterOutlined,
@@ -21,18 +20,16 @@ import {
   LinkedinFilled,
   CheckCircleFilled
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+
 import "../assets/style.css";
-import aboutImg from "../assets/images/aboutus.png";
-import core from "../assets/images/giatricotloi.png";
-import trophyImg from "../assets/images/trophy.png";
+
 import avtMember from "../assets/images/avtmember.png";
 
-const { Content } = Layout;
-const { Text, Title, Paragraph } = Typography;
+
+const { Text, Title } = Typography;
 
 const About = () => {
-  const navigate = useNavigate();
+
   return (
     <div className="about-us-page">
       <div className="title-about">
