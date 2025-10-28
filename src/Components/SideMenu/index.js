@@ -10,11 +10,15 @@ import {
 import { Menu } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // 👈 IMPORT useTranslation
 
 
 const DARK_BACKGROUND = "#001529";
 
 function SideMenu() {
+    // 👈 SỬ DỤNG HOOK DỊCH
+    const { t } = useTranslation();
+    
     const location = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
     
@@ -30,10 +34,10 @@ function SideMenu() {
             className="SideMenu" 
             style={{
                 background: DARK_BACKGROUND,
-          
+                
                 display: "flex",
                 flexDirection: "column",
-         
+          
             }}
         >
             <Menu
@@ -51,39 +55,40 @@ function SideMenu() {
                     navigate(item.key);
                 }}
                 selectedKeys={[selectedKeys]}
+                // 👈 DỊCH CÁC NHÃN MENU
                 items={[
                     {
-                        label: "Tổng quan",
+                        label: t("overview"),
                         icon: <AppstoreOutlined style={{color: "green"}}/>,
                         key: "/",
                     },
                     {
-                        label: "Quản lý kho",
+                        label: t("inventory"),
                         key: "/inventory",
                         icon: <ShopOutlined style={{ color: "#fa8c16" }} />, 
                     },
                     {
-                        label: "Đơn hàng",
+                        label: t("orders"),
                         key: "/orders",
                         icon: <ShoppingCartOutlined style={{color: "red"}}/>,
                     },
                     {
-                        label: "Nhân viên",
+                        label: t("staffs"),
                         key: "/staffs",
                         icon: <TeamOutlined style={{ color: "Teal" }} />,
                     },
                     {
-                        label: "Khách hàng",
+                        label: t("customers"),
                         key: "/customers",
-                        icon: <UserOutlined style={{color : "#FCD9C4"}}/>,
+                        icon: <UserOutlined style={{color : "#f7bc0cff"}}/>,
                     },
                     {
-                        label: "Marketing & Khuyến mãi",
+                        label: t("marketing"),
                         key: "/promotion",
                         icon: <TagOutlined style={{color : "Maroon"}}/>,
                     },
                     {
-                        label: "Hỗ trợ",
+                        label: t("help"),
                         key: "/help",
                         icon: <QuestionCircleOutlined style={{color: "blue"}}/>,
                         style: { marginTop: 'auto' } 

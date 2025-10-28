@@ -25,6 +25,7 @@ import {
     EyeOutlined,
     CrownOutlined, 
     UserOutlined, 
+    ArrowDownOutlined, // Thêm ArrowDownOutlined để sử dụng trong StatCard
 } from "@ant-design/icons";
 import {
     Chart as ChartJS,
@@ -38,6 +39,7 @@ import {
     Legend,
 } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
+import { useTranslation } from "react-i18next"; // IMPORT useTranslation
 
 // Đăng ký các thành phần Chart.js
 ChartJS.register(
@@ -54,20 +56,21 @@ ChartJS.register(
 const { Title: AntTitle, Text } = Typography;
 
 // =========================================================
-// MOCK DATA VÀ MOCK API
+// HÀM HỖ TRỢ VÀ MOCK DATA (Áp dụng i18n cho strings)
 // =========================================================
 
 const mockRevenueData = {
-    monthly: [15000, 22000, 31000, 28000, 45000, 52000, 60000, 68000, 85000, 75000, 92000, 105000],
+    // Giá trị đã được chia để mô phỏng K USD hoặc K VNĐ (tùy thuộc vào i18n)
+    monthly: [15, 22, 31, 28, 45, 52, 60, 68, 85, 75, 92, 105], 
     products: [
-        { name: 'Áo Khoác', sales: 52000, count: 210 },
-        { name: 'Túi Xách', sales: 41000, count: 180 },
-        { name: 'Giày Sneaker', sales: 35000, count: 150 },
-        { name: 'Phụ kiện', sales: 18000, count: 90 },
+        { name: 'Jackets', name_vi: 'Áo Khoác', sales: 52, count: 210 },
+        { name: 'Handbags', name_vi: 'Túi Xách', sales: 41, count: 180 },
+        { name: 'Sneakers', name_vi: 'Giày Sneaker', sales: 35, count: 150 },
+        { name: 'Accessories', name_vi: 'Phụ kiện', sales: 18, count: 90 },
     ],
     growthRate: 9,
-    newCustomers: 1000000,
-    totalRevenue: 10000,
+    newCustomers: 1000,
+    totalRevenue: 5000000, 
 };
 
 const getCustomers = () => Promise.resolve({
@@ -81,33 +84,59 @@ const getCustomers = () => Promise.resolve({
 });
 const getOrders = () => Promise.resolve({
     products: [
-        { id: 1, title: 'Áo Guci', quantity: 1, discountedPrice: 2500 },
-        { id: 2, title: 'Túi xách', quantity: 2, discountedPrice: 2500 },
-        { id: 3, title: 'Giày Sneaker', quantity: 1, discountedPrice: 7000 },
-        { id: 4, title: 'Quần Jean', quantity: 3, discountedPrice: 750 },
+        { id: 1, title: 'Gucci Sweater', title_vi: 'Áo Guci', quantity: 1, discountedPrice: 250 },
+        { id: 2, title: 'Designer Handbag', title_vi: 'Túi xách', quantity: 2, discountedPrice: 250 },
+        { id: 3, title: 'High-Top Sneaker', title_vi: 'Giày Sneaker', quantity: 1, discountedPrice: 700 },
+        { id: 4, title: 'Slim Fit Jeans', title_vi: 'Quần Jean', quantity: 3, discountedPrice: 75 },
     ]
 });
 
+// Hàm hỗ trợ định dạng tiền tệ dựa trên ngôn ngữ hiện tại
+const formatCurrencyDisplay = (amount, i18n) => {
+    const isVietnamese = i18n.language === 'vi';
+    const formatter = new Intl.NumberFormat(isVietnamese ? 'vi-VN' : 'en-US', {
+        style: 'currency',
+        currency: isVietnamese ? 'VND' : 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
+    return formatter.format(amount);
+};
+
+// Hàm hỗ trợ định dạng chi tiêu lớn (Tr/Tỷ hoặc K/M)
+const formatSpending = (amount, i18n) => {
+    const isVietnamese = i18n.language === 'vi';
+    
+    if (isVietnamese) {
+        if (amount >= 1000000000) return (amount / 1000000000).toFixed(2) + ' Tỷ VNĐ';
+        if (amount >= 1000000) return (amount / 1000000).toFixed(2) + ' Tr VNĐ';
+        return amount.toLocaleString('vi-VN') + ' VNĐ';
+    } else {
+        if (amount >= 1000000) return (amount / 1000000).toFixed(1) + ' M USD';
+        if (amount >= 1000) return (amount / 1000).toFixed(1) + ' K USD';
+        return formatCurrencyDisplay(amount, i18n);
+    }
+};
 
 // =========================================================
-// 1. Component Card Thống kê Chính (StatCard - KẾT HỢP ANIMATION)
+// 1. Component Card Thống kê Chính (StatCard)
 // =========================================================
 
 function StatCard({ title, value, icon, color, bg, growth = null, animationDelay = '0s' }) { 
-    
-    // Tính toán độ trễ FLOAT animation
     const floatDelay = `calc(0.5s + ${animationDelay})`; 
     
     const renderValue = () => {
         if (growth !== null) {
+            const isPositive = growth >= 0;
             return (
                 <Flex align="center" gap={10}>
                     <AntTitle level={3} style={{ margin: 0, color: '#333', fontWeight: 800 }}>
                         {value}
                     </AntTitle>
                     <Tag 
-                        color={growth >= 0 ? 'green' : 'red'} 
-                        icon={growth >= 0 ? <ArrowUpOutlined /> : <ArrowUpOutlined style={{ transform: 'rotate(180deg)' }} />}
+                        color={isPositive ? 'green' : 'red'} 
+                        // Sử dụng ArrowDownOutlined khi giảm trưởng
+                        icon={isPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />} 
                         style={{ fontWeight: 600, padding: '4px 8px', fontSize: 13 }}
                     >
                         {Math.abs(growth)}%
@@ -162,17 +191,23 @@ function StatCard({ title, value, icon, color, bg, growth = null, animationDelay
 }
 
 // =========================================================
-// 2. Biểu đồ Đường (MonthlyRevenueChart) - Giữ nguyên
+// 2. Biểu đồ Đường (MonthlyRevenueChart) 
 // =========================================================
 
 function MonthlyRevenueChart({ data }) {
-    const labels = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
+    const { t, i18n } = useTranslation(); // 👈 Dùng hook dịch
+
+    const labels = i18n.language === 'vi' 
+        ? ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"]
+        : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    const unit = i18n.language === 'vi' ? '(K VNĐ)' : '(K USD)';
     
     const chartData = {
         labels,
         datasets: [
             {
-                label: 'Doanh thu (VNĐ)',
+                label: `${t('revenue')} ${unit}`, // 👈 Dịch
                 data: data.monthly,
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -187,15 +222,15 @@ function MonthlyRevenueChart({ data }) {
         responsive: true,
         plugins: {
             legend: { position: 'top' },
-            title: { display: true, text: '📈 Doanh thu theo tháng (VNĐ)', font: { size: 16, weight: 'bold' } },
+            title: { display: true, text: `📈 ${t('monthly_revenue_trend')} ${unit}`, font: { size: 16, weight: 'bold' } }, 
         },
         scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'VNĐ' } },
+            y: { beginAtZero: true, title: { display: true, text: unit.replace(/[()]/g, '') } },
         },
     };
 
     return (
-        <Card title="Phân tích Doanh thu" bordered={false} style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+        <Card title={t("revenue_analysis")} bordered={false} style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}> 
             <div style={{ height: '300px' }}>
                 <Line options={options} data={chartData} />
             </div>
@@ -204,18 +239,21 @@ function MonthlyRevenueChart({ data }) {
 }
 
 // =========================================================
-// 3. Biểu đồ Cột (BestSellingProductsChart) - Giữ nguyên
+// 3. Biểu đồ Cột (BestSellingProductsChart) 
 // =========================================================
 
 function BestSellingProductsChart({ data }) {
-    const labels = data.products.map(p => p.name);
+    const { t, i18n } = useTranslation(); //  Dùng hook dịch
+    
+    const labels = data.products.map(p => i18n.language === 'vi' ? p.name_vi : p.name); //  Dịch tên sản phẩm
     const salesData = data.products.map(p => p.sales);
+    const unit = i18n.language === 'vi' ? '(K VNĐ)' : '(K USD)';
 
     const chartData = {
         labels,
         datasets: [
             {
-                label: 'Doanh thu',
+                label: t('revenue'), //  Dịch
                 data: salesData,
                 backgroundColor: 'rgba(54, 162, 235, 0.7)',
                 borderColor: 'rgba(54, 162, 235, 1)',
@@ -229,15 +267,15 @@ function BestSellingProductsChart({ data }) {
         indexAxis: 'y',
         plugins: {
             legend: { display: false },
-            title: { display: true, text: '🔥 Sản phẩm bán chạy nhất', font: { size: 16, weight: 'bold' } },
+            title: { display: true, text: `🔥 ${t('top_selling_products')}`, font: { size: 16, weight: 'bold' } }, //  Dịch
         },
         scales: {
-            x: { beginAtZero: true, title: { display: true, text: 'Doanh thu (VNĐ)' } },
+            x: { beginAtZero: true, title: { display: true, text: `${t('revenue')} ${unit}` } }, // Dịch
         },
     };
 
     return (
-        <Card title="Hiệu suất Sản phẩm" bordered={false} style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+        <Card title={t("product_performance")} bordered={false} style={{ borderRadius: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}> 
             <div style={{ height: '300px' }}>
                 <Bar options={options} data={chartData} />
             </div>
@@ -246,10 +284,12 @@ function BestSellingProductsChart({ data }) {
 }
 
 // =========================================================
-// 4. Khách hàng Chi tiêu Cao nhất (TopCustomersRanking - MỚI & CHUYÊN NGHIỆP)
+// 4. Khách hàng Chi tiêu Cao nhất
 // =========================================================
 
 function TopCustomersRanking() {
+    const { t, i18n } = useTranslation(); // Dùng hook dịch
+    
     const [topCustomers, setTopCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [maxSpending, setMaxSpending] = useState(0); 
@@ -275,22 +315,9 @@ function TopCustomersRanking() {
         <CrownOutlined style={{ color: '#ff7875', fontSize: 16 }} />,
     ];
 
-    // ✅ Thêm hàm định dạng tiền tệ
-    const formatCurrency = (amount) => {
-        // Chỉ giữ lại 2 chữ số sau dấu chấm nếu là tiền triệu hoặc tỷ 
-        // Sau đó thay thế bằng đơn vị 'Tr VNĐ' hoặc 'Tỷ VNĐ' cho gọn
-        if (amount >= 1000000000) {
-            return (amount / 1000000000).toFixed(2) + ' Tỷ VNĐ';
-        }
-        if (amount >= 1000000) {
-            return (amount / 1000000).toFixed(2) + ' Tr VNĐ';
-        }
-        return amount.toLocaleString('vi-VN') + ' VNĐ';
-    };
-
     return (
         <Card 
-            title={<Space><TrophyOutlined style={{ color: '#ffc53d' }} /> Khách hàng chi tiêu cao</Space>} 
+            title={<Space><TrophyOutlined style={{ color: '#ffc53d' }} /> {t('top_spending_customers')}</Space>} // 👈 Dịch
             bordered={false} 
             style={{ 
                 borderRadius: 16, 
@@ -323,18 +350,17 @@ function TopCustomersRanking() {
                                         />
                                     }
                                     title={<Typography.Text strong ellipsis>{item.firstName} {item.lastName}</Typography.Text>}
-                                    description={<Typography.Text type="secondary" style={{ fontSize: 12 }}>Tổng chi tiêu</Typography.Text>}
-                                    // ✅ Xóa flexGrow: 1 và thiết lập chiều rộng cố định/tối đa
+                                    description={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{t('total_spent')}</Typography.Text>}
+                                  
                                     style={{ width: '160px', minWidth: '160px', paddingRight: '10px' }}
                                 />
                                 
-                                {/* 3. THANH TIẾN TRÌNH & SỐ TIỀN (Width: Phần còn lại) */}
-                                {/* ✅ Thay đổi minWidth để dễ quản lý hơn, và để nó tự lấp đầy không gian còn lại */}
+                        
                                 <Flex direction="column" align="flex-end" style={{ flexGrow: 1, minWidth: '100px' }}>
                                     <Typography.Text strong style={{ color: index === 0 ? '#fa8c16' : '#850a0aff', fontSize: 13 }}>
-                                        {formatCurrency(item.totalSpending)} {/* ✅ Dùng hàm định dạng mới */}
+                                        {formatSpending(item.totalSpending, i18n)} {/* 👈 Dùng hàm định dạng i18n */}
                                     </Typography.Text>
-                                    <Tooltip title={`Chiếm ${progressPercent}% so với Khách hàng Top 1`}>
+                                    <Tooltip title={t('progress_tooltip', { percent: progressPercent })}> {/* 👈 Dịch */}
                                         <Progress 
                                             percent={progressPercent} 
                                             showInfo={false} 
@@ -354,9 +380,11 @@ function TopCustomersRanking() {
 }
 
 // =========================================================
-// 5. Component Đơn hàng Gần đây (RecentOrdersTable) - ĐÃ TỐI ƯU HÓA
+// 5. Component Đơn hàng Gần đây (RecentOrdersTable)
 // =========================================================
 function RecentOrdersTable() {
+    const { t, i18n } = useTranslation(); //  Dùng hook dịch
+    
     const [dataSource, setDataSource] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -374,8 +402,8 @@ function RecentOrdersTable() {
     const columns = [
         { 
             // 1. Tên sản phẩm: Chiếm 45% (Tăng thêm 5% để chắc chắn)
-            title: "Tên sản phẩm", 
-            dataIndex: "title", 
+            title: t("product_name"), // 👈 Dịch
+            dataIndex: i18n.language === 'vi' ? "title_vi" : "title", //  Dùng field title_vi nếu là tiếng Việt
             width: '45%', 
             align: 'left',
             render: (text) => <Typography.Text strong>{text}</Typography.Text>,
@@ -384,7 +412,7 @@ function RecentOrdersTable() {
         },
         { 
             // 2. Số lượng: Chiếm 15%
-            title: "Số lượng", 
+            title: t("quantity"), //  Dịch
             dataIndex: "quantity", 
             width: '15%', 
             align: 'center', 
@@ -392,26 +420,26 @@ function RecentOrdersTable() {
         },
         {
             // 3. Đơn giá (VNĐ): Chiếm 25%
-            title: "Đơn giá",
+            title: t("unit_price"), //  Dịch
             dataIndex: "discountedPrice",
             width: '25%', 
             align: 'right', 
-            render: (v) => v.toLocaleString("vi-VN"),
+            render: (v) => formatCurrencyDisplay(v, i18n), //  Dùng hàm định dạng i18n
             onHeaderCell: () => ({ style: { fontSize: 13, padding: '10px 6px' } }), 
         },
         {
             // 4. Hành động: Chiếm 15% (Đủ cho nút 'Chi tiết')
-            title: "Hành động",
+            title: t("action"), //  Dịch
             width: '15%', 
             align: 'right', 
             render: () => (
-                <Tooltip title="Xem chi tiết đơn hàng">
+                <Tooltip title={t("view_order_details")}> {/*  Dịch */}
                     <Button
                         size="small"
                         type="link"
                         icon={<EyeOutlined />}
                     >
-                        Chi tiết
+                        {t("details")} {/*  Dịch */}
                     </Button>
                 </Tooltip>
             ),
@@ -421,18 +449,18 @@ function RecentOrdersTable() {
 
     return (
         <Card 
-            title={<Space><ShoppingCartOutlined /> Đơn hàng gần đây</Space>} 
+            title={<Space><ShoppingCartOutlined /> {t('recent_orders')}</Space>} //  Dịch
             bordered={false} 
             style={{ 
                 borderRadius: 16, 
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)", 
                 height: '100%',
-                // ✅ Thêm overflow: 'hidden' để ngăn nội dung bảng tràn ra ngoài Card
+               
                 overflow: 'hidden' 
             }}
-            bodyStyle={{ padding: '0 5px 10px 5px' }} // ✅ Giảm padding body Card
+            bodyStyle={{ padding: '0 5px 10px 5px' }} // 
         >
-            {/* ✅ CSS cục bộ để tùy chỉnh toàn bộ bảng */}
+         
             <style>
                 {`
                 /* Quan trọng: Ngăn tiêu đề cột bị xuống dòng */
@@ -463,8 +491,22 @@ function RecentOrdersTable() {
 // =========================================================
 
 function RevenueReports() {
+    const { t, i18n } = useTranslation(); //
+    // Định dạng tổng doanh thu với i18n
+    const totalRevenueFormatted = formatCurrencyDisplay(mockRevenueData.totalRevenue, i18n);
+
+    // Chuỗi tiêu đề Stat Card (chỉ cần là key)
+    const cardTitles = {
+        totalRevenue: t("total_revenue"),
+        growthRate: t("growth_rate"),
+        newCustomers: t("new_customers"),
+        topProduct: t("top_product"),
+    };
     
-    const totalRevenueFormatted = mockRevenueData.totalRevenue.toLocaleString('vi-VN');
+    // Lấy tên sản phẩm bán chạy nhất theo ngôn ngữ hiện tại
+    const topProductName = i18n.language === 'vi' 
+        ? mockRevenueData.products[0].name_vi 
+        : mockRevenueData.products[0].name;
 
     return (
         <Space
@@ -480,15 +522,15 @@ function RevenueReports() {
             {/* --- HEADER --- */}
             <AntTitle level={3} style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <LineChartOutlined style={{ color: '#fff', backgroundColor: 'Green', borderRadius: '50%', padding: 10, fontSize: 24, boxShadow: '0 4px 10px rgba(235, 47, 150, 0.4)' }} />
-                <span style={{ fontWeight: 700 }}>Tổng quan</span>
+                <span style={{ fontWeight: 700 }}>{t("total_overview")}</span> {/*  Dịch */}
             </AntTitle>
 
-            {/* --- STATISTIC CARDS (Tối ưu hóa) --- */}
+            {/* --- STATISTIC CARDS--- */}
             <Row gutter={[24, 24]}>
                 <Col xs={24} sm={12} lg={6}>
                     <StatCard
-                        title="Tổng doanh thu"
-                        value={`${totalRevenueFormatted} VNĐ`}
+                        title={cardTitles.totalRevenue} //  Dịch
+                        value={totalRevenueFormatted} //  Dùng hàm định dạng i18n
                         icon={<DollarOutlined />}
                         color="#00b96b"
                         bg="linear-gradient(135deg, #e6fffb, #b5f5ec)"
@@ -497,7 +539,7 @@ function RevenueReports() {
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
                     <StatCard
-                        title="Tăng trưởng"
+                        title={cardTitles.growthRate} //  Dịch
                         value={`+${mockRevenueData.growthRate}%`}
                         icon={<LineChartOutlined />}
                         color="#1677ff"
@@ -508,8 +550,8 @@ function RevenueReports() {
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
                     <StatCard
-                        title="Khách hàng"
-                        value={mockRevenueData.newCustomers.toLocaleString('vi-VN')}
+                        title={cardTitles.newCustomers} //  Dịch
+                        value={mockRevenueData.newCustomers.toLocaleString(i18n.language)} // Dùng i18n.language
                         icon={<UserAddOutlined />}
                         color="#722ed1"
                         bg="linear-gradient(135deg, #f9f0ff, #d3adf7)"
@@ -518,8 +560,8 @@ function RevenueReports() {
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
                     <StatCard
-                        title="Sản phẩm bán chạy"
-                        value={mockRevenueData.products[0].name}
+                        title={cardTitles.topProduct} //  Dịch
+                        value={topProductName} //  Dùng tên sản phẩm theo ngôn ngữ
                         icon={<FireOutlined />}
                         color="#ff4d4f"
                         bg="linear-gradient(135deg, #fff1f0, #ffa39e)"
@@ -539,7 +581,6 @@ function RevenueReports() {
                 
                 <Col xs={24} lg={8}>
                     <Space direction="vertical" size={24} style={{ width: '100%' }}>
-                       
                         <TopCustomersRanking /> 
                         <RecentOrdersTable /> 
                     </Space>

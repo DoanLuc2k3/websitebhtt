@@ -27,13 +27,13 @@ import {
     Divider,
     Select,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"; 
 
 // =================================================================
-// --- MOCK API DATA  ---
+// --- MOCK API DATA (KEEP) ---
 // =================================================================
-
 const getComments = () =>
     Promise.resolve({
         comments: [
@@ -42,82 +42,51 @@ const getComments = () =>
             { body: "Đơn hàng rất chi là đẹp." },
         ],
     });
+
 const getOrders = () =>
     Promise.resolve({
         products: [{ title: "Tai nghe X" }, { title: "Chuột không dây Y" }],
     });
 
 const mockSearchData = [
-    { type: "keyword", label: "Áo", value: "Áo", count: 120 },
+    // Thêm trường dịch cho dữ liệu mock
+    { type: "keyword", label_vi: "Áo", label_en: "Shirt", value: "Áo", count: 120 },
     {
         type: "product",
-        label: "Áo Guci",
+        label_vi: "Áo Guci",
+        label_en: "Gucci Shirt",
         value: "Áo Guci",
         price: "1.200.000 VNĐ",
-        img: "https://cdn.vuahanghieu.com/unsafe/0x500/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/product/2025/10/ao-polo-nam-gucci-gg-horsebit-print-cotton-shirt-mau-kem-hoa-tiet-size-m-68f09bdcd6903-16102025141644.jpg",
+        price_en: "$52.00",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTGDgEMu7ST1RvBPSE4njZHX_ikMLy34RWNg&s",
     },
     {
         type: "keyword",
-        label: "Túi xách nữ cao cấp",
+        label_vi: "Túi xách nữ cao cấp",
+        label_en: "Premium Handbag",
         value: "Túi xách nữ cao cấp",
         count: 45,
     },
     {
         type: "product",
-        label: "Túi xách rách",
+        label_vi: "Túi xách rách",
+        label_en: "Distressed Bag",
         value: "Túi xách rách",
         price: "450.000 VNĐ",
+        price_en: "$20.00",
         img: "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTL5ZhH3_MIKtBqKLxMkXYyIrq5USZR5JO--tMllPP3FPIqkBazD7VYRS_zFr55d2koMQ2Ksjn_Qb2OB4WweThTgPrM0wPJrPJBFY5irjcXsOwQqLuhg3-xn7m0gK3ka4PhzopKisiONCgZ&usqp=CAc",
     },
 ];
-
-const renderItem = (item) => {
-    if (item.type === "product") {
-        return {
-            value: item.value,
-            label: (
-                <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
-                    <Flex gap={10} align="center">
-                        <Avatar size={40} src={item.img} />
-                        <div>
-                            <Typography.Text strong>{item.label}</Typography.Text>
-                            <Typography.Paragraph
-                                style={{ margin: 0, fontSize: 12, color: "#f00" }}
-                            >
-                                {item.price}
-                            </Typography.Paragraph>
-                        </div>
-                    </Flex>
-                    <SearchOutlined style={{ color: "#ccc" }} />
-                </Flex>
-            ),
-        };
-    }
-    return {
-        value: item.value,
-        label: (
-            <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
-                <Typography.Text>
-                    <SearchOutlined style={{ marginRight: 8, color: "#999" }} />
-                    {item.label}
-                </Typography.Text>
-                {item.count && (
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                        ({item.count} kết quả)
-                    </Typography.Text>
-                )}
-            </Flex>
-        ),
-    };
-};
-
-const searchOptions = mockSearchData.map(renderItem);
 
 // =================================================================
 // --- MAIN COMPONENT: APPHEADER ---
 // =================================================================
 
-function AppHeader() {
+function AppHeader({ toggleSideMenu }) {
+    
+    const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
+
     const [comments, setComments] = useState([]);
     const [orders, setOrders] = useState([]);
     const [commentsOpen, setCommentsOpen] = useState(false);
@@ -125,40 +94,55 @@ function AppHeader() {
     const [adminOpen, setAdminOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
-    
-    
-
-    const navigate = useNavigate();
-    const PRIMARY_COLOR = "#1677ff";
-
     const [systemSettings, setSystemSettings] = useState({
         notifications: true,
         autoUpdate: false,
-        language: "vi",
     });
+
+    const PRIMARY_COLOR = "#1677ff";
 
     useEffect(() => {
         getComments().then((res) => setComments(res.comments || []));
         getOrders().then((res) => setOrders(res.products || []));
-    }, []);
+    }, [i18n.language]);
 
-    const handleLogout = () => {
+    const handleChangeLanguage = useCallback(
+        (newLang) => {
+            localStorage.setItem("appLanguage", newLang);
+            i18n.changeLanguage(newLang);
+        },
+        [i18n]
+    );
+
+    const handleSaveSettings = useCallback(() => {
+        message.success(t("setting_saved_success"));
+        setSettingsOpen(false);
+    }, [t]);
+
+    const handleLogout = useCallback(() => {
         localStorage.removeItem("adminLogin");
-        message.success("Đã quay lại thành công!");
+        message.success(t("logout_success")); 
         setAdminOpen(false);
         navigate("/");
-    };
+    }, [t, navigate]);
 
-    const onSearch = (value) => {
-        if (value) {
-            message.info(`Đang tìm kiếm: "${value}"`);
-        }
-    };
+    const onSearch = useCallback(
+        (value) => {
+            if (value) {
+                message.info(t("searching_for", { term: value }));
+            }
+        },
+        [t]
+    );
 
-    const handleToggleDarkMode = () => {
-        setDarkMode(!darkMode);
-        message.info(`Chế độ ${!darkMode ? "Tối" : "Sáng"} đã được kích hoạt!`);
-    };
+    const handleToggleDarkMode = useCallback(() => {
+        setDarkMode((prev) => !prev);
+        message.info(
+            t("dark_mode_status", {
+                status: !darkMode ? t("switch_to_dark") : t("switch_to_light"),
+            })
+        );
+    }, [darkMode, t]);
 
     const handleIconHover = (e, isEntering, iconColor = "#555") => {
         const target = e.currentTarget;
@@ -172,44 +156,109 @@ function AppHeader() {
         }
     };
 
-    const adminPopoverContent = (
-        <div style={{ width: 250 }}>
-            <Flex
-                gap={10}
-                align="center"
-                style={{
-                    padding: "8px 0",
-                    borderBottom: "1px solid #f0f0f0",
-                    marginBottom: 10,
-                }}
-            >
-                <Avatar size={48} src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />
-                <div>
-                    <Typography.Text strong>Doãn Bá Min</Typography.Text>
-                    <Typography.Paragraph type="secondary" style={{ margin: 0, fontSize: 12 }}>
-                        admin@lmcompany.com
-                    </Typography.Paragraph>
-                </div>
-            </Flex>
+    // =================================================================
+    // 🔍 LOGIC RENDER ITEM & SEARCH OPTIONS (Dùng useMemo)
+    // =================================================================
 
-            <List size="small" style={{ cursor: "pointer" }}>
-                <List.Item onClick={() => setAdminOpen(true)}>
-                    <UserOutlined style={{ marginRight: 8 }} /> Thông tin cá nhân
-                </List.Item>
-                <List.Item onClick={() => setSettingsOpen(true)}>
-                    <SettingOutlined style={{ marginRight: 8 }} /> Cài đặt hệ thống
-                </List.Item>
-                <List.Item onClick={handleLogout} style={{ color: "red" }}>
-                    <LogoutOutlined style={{ marginRight: 8 }} /> Đăng xuất
-                </List.Item>
-            </List>
-        </div>
+    const renderItem = (item) => {
+        const label =
+            i18n.language === "en" ? item.label_en || item.label : item.label_vi || item.label;
+        const price =
+            i18n.language === "en" ? item.price_en || item.price : item.price;
+
+        if (item.type === "product") {
+            return {
+                value: item.value,
+                label: (
+                    <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
+                        <Flex gap={10} align="center">
+                            <Avatar size={40} src={item.img} />
+                            <div>
+                                <Typography.Text strong>{label}</Typography.Text>
+                                <Typography.Paragraph
+                                    style={{ margin: 0, fontSize: 12, color: "#f00" }}
+                                >
+                                    {price}
+                                </Typography.Paragraph>
+                            </div>
+                        </Flex>
+                        <SearchOutlined style={{ color: "#ccc" }} />
+                    </Flex>
+                ),
+            };
+        }
+        return {
+            value: item.value,
+            label: (
+                <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
+                    <Typography.Text>
+                        <SearchOutlined style={{ marginRight: 8, color: "#999" }} />
+                        {label}
+                    </Typography.Text>
+                    {item.count && (
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                            ({item.count} {t("search_results")})
+                        </Typography.Text>
+                    )}
+                </Flex>
+            ),
+        };
+    };
+
+    const currentSearchOptions = useMemo(() => mockSearchData.map(renderItem), [i18n.language]);
+
+    // =================================================================
+    // 🧑‍💼 ADMIN POPOVER CONTENT (Không thay đổi)
+    // =================================================================
+    const adminPopoverContent = useMemo(
+        () => (
+            <div style={{ width: 250 }}>
+                <Flex
+                    gap={10}
+                    align="center"
+                    style={{
+                        padding: "8px 0",
+                        borderBottom: "1px solid #f0f0f0",
+                        marginBottom: 10,
+                    }}
+                >
+                    <Avatar
+                        size={48}
+                        src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
+                    />
+                    <div>
+                        <Typography.Text strong>Doãn Bá Min</Typography.Text>
+                        <Typography.Paragraph
+                            type="secondary"
+                            style={{ margin: 0, fontSize: 12 }}
+                        >
+                            admin@lmcompany.com
+                        </Typography.Paragraph>
+                    </div>
+                </Flex>
+
+                <List size="small" style={{ cursor: "pointer" }}>
+                    <List.Item onClick={() => setAdminOpen(true)}>
+                        <UserOutlined style={{ marginRight: 8 }} /> {t("personal_info")}
+                    </List.Item>
+                    <List.Item onClick={() => setSettingsOpen(true)}>
+                        <SettingOutlined style={{ marginRight: 8 }} /> {t("system_settings")}
+                    </List.Item>
+                    <List.Item onClick={handleLogout} style={{ color: "red" }}>
+                        <LogoutOutlined style={{ marginRight: 8 }} /> {t("logout")}
+                    </List.Item>
+                </List>
+            </div>
+        ),
+        [t, handleLogout]
     );
 
+    // =================================================================
+    // 🧱 RENDER UI (Đã sửa lỗi cân chỉnh tìm kiếm)
+    // =================================================================
     return (
-        // Sử dụng class AppHeader (sticky) và header-visible (luôn hiển thị)
         <div
-            className="AppHeader header-visible" 
+            className="AppHeader header-visible"
             style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -219,25 +268,82 @@ function AppHeader() {
             }}
         >
             {/* LOGO */}
-            <Flex align="center" gap={10} style={{ cursor: "pointer" }} onClick={() => navigate("/dashboard")}>
+            <Flex
+                align="center"
+                gap={10}
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate("/dashboard")}
+            >
                 <Typography.Title level={3} style={{ margin: 0 }}>
-                    <img src="https://i.imgur.com/sf3D9V9.png" alt="Logo" style={{ height: 48, objectFit: "contain" }} />
+                    <img
+                        src="https://i.imgur.com/sf3D9V9.png"
+                        alt="Logo"
+                        style={{ height: 48, objectFit: "contain" }}
+                    />
                 </Typography.Title>
             </Flex>
 
-            {/* SEARCH */}
-            <AutoComplete dropdownMatchSelectWidth={500} options={searchOptions} style={{ width: 450 }} onSelect={onSearch}>
+            {/* SEARCH - SỬ DỤNG MARGIN LEFT AUTO ĐỂ CĂN SÁT CỤM ICON PHẢI */}
+            <AutoComplete
+                dropdownMatchSelectWidth={500}
+                options={currentSearchOptions}
+                style={{ 
+                    width: 450, 
+                    marginRight: 100, /* Khoảng cách với cụm icon */
+                    marginLeft: 'auto' /* 👈 ĐIỀU CHỈNH CHÍNH */
+                }} 
+                onSelect={onSearch}
+            >
                 <Input
                     prefix={<SearchOutlined style={{ color: "#aaa" }} />}
-                    placeholder="Tìm kiếm sản phẩm, đơn hàng, khách hàng..."
+                    placeholder={t("search_placeholder")}
                     allowClear
                     onPressEnter={(e) => onSearch(e.target.value)}
                     style={{ borderRadius: 8, height: 40 }}
                 />
             </AutoComplete>
 
-            {/* ICONS */}
-            <Space size={16}>
+            {/* ICONS & LANGUAGE SELECTOR */}
+            <Space size={16} align="center"> 
+                {/* 👈 NÚT CHỌN NGÔN NGỮ ĐÃ ĐƯỢC CÂN ĐỐI */}
+                <Select
+                    value={i18n.language}
+                    onChange={handleChangeLanguage}
+                    // Đảm bảo chiều cao 40px, style cho căn chỉnh
+                    style={{ width: 140, height: 40, lineHeight: '40px', verticalAlign: 'middle' }} 
+                    bordered={false}
+                    dropdownStyle={{ minWidth: 150 }}
+                    optionLabelProp="label"
+                    options={[
+                        {
+                            value: "vi",
+                            label: (
+                                <Flex align="center" gap={8}> 
+                                    <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg"
+                                        alt="Vietnamese Flag"
+                                        style={{ width: 20, height: 15, borderRadius: 2 }}
+                                    />
+                                    {t("vietnamese_language")}
+                                </Flex>
+                            ),
+                        },
+                        {
+                            value: "en",
+                            label: (
+                                <Flex align="center" gap={8}> 
+                                    <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg"
+                                        alt="English Flag"
+                                        style={{ width: 20, height: 15, borderRadius: 2 }}
+                                    />
+                                    {t("english_language")}
+                                </Flex>
+                            ),
+                        },
+                    ]}
+                />
+
                 <Button
                     type="default"
                     shape="circle"
@@ -255,9 +361,11 @@ function AppHeader() {
                         backgroundColor: "#fff7e6",
                         borderColor: "transparent",
                         boxShadow: "0 0 6px rgba(255, 215, 0, 0.4)",
+                        width: 40, 
+                        height: 40,
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#fff1b8")}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff7e6")}
+                    onMouseEnter={(e) => handleIconHover(e, true, "#FFD700")}
+                    onMouseLeave={(e) => handleIconHover(e, false, "#FFD700")}
                 />
 
                 <Badge count={comments.length}>
@@ -266,7 +374,12 @@ function AppHeader() {
                         shape="circle"
                         icon={<MailOutlined style={{ fontSize: 20, color: "#555" }} />}
                         onClick={() => setCommentsOpen(true)}
-                        style={{ backgroundColor: "#f5f5f5", borderColor: "transparent" }}
+                        style={{ 
+                            backgroundColor: "#f5f5f5", 
+                            borderColor: "transparent",
+                            width: 40, 
+                            height: 40,
+                        }}
                         onMouseEnter={(e) => handleIconHover(e, true)}
                         onMouseLeave={(e) => handleIconHover(e, false)}
                     />
@@ -278,7 +391,12 @@ function AppHeader() {
                         shape="circle"
                         icon={<BellOutlined style={{ fontSize: 20, color: "#555" }} />}
                         onClick={() => setNotificationsOpen(true)}
-                        style={{ backgroundColor: "#f5f5f5", borderColor: "transparent" }}
+                        style={{ 
+                            backgroundColor: "#f5f5f5", 
+                            borderColor: "transparent",
+                            width: 40, 
+                            height: 40,
+                        }}
                         onMouseEnter={(e) => handleIconHover(e, true)}
                         onMouseLeave={(e) => handleIconHover(e, false)}
                     />
@@ -292,80 +410,130 @@ function AppHeader() {
                             background: "#f5f7fa",
                             borderRadius: 25,
                             transition: "all 0.2s ease",
+                            display: 'flex', 
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 40, 
+                            width: 40,
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.background = "#e6f4ff")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "#f5f7fa")}
                     >
                         <Avatar
                             src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
-                            size="large"
+                            size="default" 
                             icon={<UserOutlined />}
                         />
                     </Space>
                 </Popover>
             </Space>
 
-            {/* DRAWER VÀ MODAL */}
-            <Drawer title="📩 Bình luận mới" open={commentsOpen} onClose={() => setCommentsOpen(false)} maskClosable>
+            {/* DRAWER & MODAL (Không thay đổi) */}
+            <Drawer
+                title={t("new_comment")}
+                open={commentsOpen}
+                onClose={() => setCommentsOpen(false)}
+                maskClosable
+            >
                 <List dataSource={comments} renderItem={(item) => <List.Item>{item.body}</List.Item>} />
             </Drawer>
-            <Drawer title="🔔 Thông báo đơn hàng" open={notificationsOpen} onClose={() => setNotificationsOpen(false)} maskClosable>
+            <Drawer
+                title={t("order_notification")}
+                open={notificationsOpen}
+                onClose={() => setNotificationsOpen(false)}
+                maskClosable
+            >
                 <List
                     dataSource={orders}
                     renderItem={(item) => (
                         <List.Item>
-                            <Typography.Text strong>{item.title}</Typography.Text> đã được đặt hàng!
+                            <Typography.Text strong>{item.title}</Typography.Text>{" "}
+                            {t("order_placed")}
                         </List.Item>
                     )}
                 />
             </Drawer>
-            {/* MODAL ADMIN PROFILE  */}
-            <Modal title="👨‍💼 Thông tin Quản trị viên" open={adminOpen} onCancel={() => setAdminOpen(false)} footer={null} centered>
+            {/* MODAL ADMIN PROFILE */}
+            <Modal
+                title={`👨‍💼 ${t("admin_profile")}`}
+                open={adminOpen}
+                onCancel={() => setAdminOpen(false)}
+                footer={null}
+                centered
+            >
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
-                    <Avatar size={90} src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />
+                    <Avatar
+                        size={90}
+                        src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
+                    />
                     <Typography.Title level={4} style={{ marginTop: 10 }}>
                         Doãn Bá Min
                     </Typography.Title>
-                    <Typography.Text type="secondary">Quản trị hệ thống</Typography.Text>
+                    <Typography.Text type="secondary">{t("system_admin")}</Typography.Text>
                 </div>
                 <Form layout="vertical">
-                    <Form.Item label="Tên đăng nhập"><Input value="admin_lm" disabled /></Form.Item>
-                    <Form.Item label="Email"><Input value="admin@lmcompany.com" /></Form.Item>
-                    <Form.Item label="Số điện thoại"><Input value="0909 999 999" /></Form.Item>
-                    <Form.Item label="Chức vụ"><Input value="System Administrator" disabled /></Form.Item>
+                    <Form.Item label={t("username")}>
+                        <Input value="admin_lm" disabled />
+                    </Form.Item>
+                    <Form.Item label="Email">
+                        <Input value="admin@lmcompany.com" />
+                    </Form.Item>
+                    <Form.Item label={t("phone_number")}>
+                        <Input value="0909 999 999" />
+                    </Form.Item>
+                    <Form.Item label={t("role")}>
+                        <Input value={t("system_admin")} disabled />
+                    </Form.Item>
                     <Space style={{ display: "flex", justifyContent: "space-between" }}>
-                        <Button type="primary" icon={<EditOutlined />}>Cập nhật thông tin</Button>
-                        <Button danger icon={<LogoutOutlined />} onClick={handleLogout}>Quay lại</Button>
+                        <Button type="primary" icon={<EditOutlined />}>
+                            {t("update_info")}
+                        </Button>
+                        <Button danger icon={<LogoutOutlined />} onClick={handleLogout}>
+                            {t("back")}
+                        </Button>
                     </Space>
                 </Form>
             </Modal>
-            {/* MODAL SYSTEM SETTINGS */}
+            {/* SYSTEM SETTINGS MODAL (Đã xóa phần ngôn ngữ) */}
             <Modal
-                title="⚙️ Cài đặt hệ thống"
+                title={`⚙️ ${t("system_settings")}`}
                 open={settingsOpen}
                 onCancel={() => setSettingsOpen(false)}
                 footer={[
-                    <Button key="cancel" onClick={() => setSettingsOpen(false)}>Hủy</Button>,
-                    <Button key="save" type="primary" onClick={() => { message.success("Lưu cài đặt thành công!"); setSettingsOpen(false); }}>Lưu thay đổi</Button>,
+                    <Button key="cancel" onClick={() => setSettingsOpen(false)}>
+                        {t("cancel")}
+                    </Button>,
+                    <Button key="save" type="primary" onClick={handleSaveSettings}>
+                        {t("save_changes")}
+                    </Button>,
                 ]}
                 centered
             >
                 <Form layout="vertical">
-                    <Form.Item label="Chế độ thông báo"><Switch checked={systemSettings.notifications} onChange={(checked) => setSystemSettings({ ...systemSettings, notifications: checked })} checkedChildren="Bật" unCheckedChildren="Tắt" /></Form.Item>
-                    <Form.Item label="Cập nhật tự động"><Switch checked={systemSettings.autoUpdate} onChange={(checked) => setSystemSettings({ ...systemSettings, autoUpdate: checked })} checkedChildren="Bật" unCheckedChildren="Tắt" /></Form.Item>
-                    <Form.Item label="Ngôn ngữ hiển thị">
-                        <Select
-                            value={systemSettings.language}
-                            onChange={(value) => setSystemSettings({ ...systemSettings, language: value })}
-                            options={[
-                                { label: "Tiếng Việt", value: "vi" },
-                                { label: "English", value: "en" },
-                                { label: "日本語", value: "jp" },
-                            ]}
+                    <Form.Item label={t("notifications_mode")}>
+                        <Switch
+                            checked={systemSettings.notifications}
+                            onChange={(checked) =>
+                                setSystemSettings({ ...systemSettings, notifications: checked })
+                            }
+                            checkedChildren={t("on")}
+                            unCheckedChildren={t("off")}
                         />
                     </Form.Item>
+                    <Form.Item label={t("auto_update")}>
+                        <Switch
+                            checked={systemSettings.autoUpdate}
+                            onChange={(checked) =>
+                                setSystemSettings({ ...systemSettings, autoUpdate: checked })
+                            }
+                            checkedChildren={t("on")}
+                            unCheckedChildren={t("off")}
+                        />
+                    </Form.Item>
+
                     <Divider />
-                    <Form.Item label="Giao diện">
+
+                    <Form.Item label={t("interface")}>
                         <Button
                             type={darkMode ? "default" : "primary"}
                             icon={<BulbOutlined />}
@@ -376,7 +544,7 @@ function AppHeader() {
                                 color: darkMode ? "#fff" : "#000",
                             }}
                         >
-                            {darkMode ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"}
+                            {darkMode ? t("switch_to_light") : t("switch_to_dark")}
                         </Button>
                     </Form.Item>
                 </Form>

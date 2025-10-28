@@ -6,8 +6,11 @@ import {
     CheckCircleOutlined,
 } from "@ant-design/icons";
 import React from "react";
+import { useTranslation } from "react-i18next"; 
 
 function AppFooter() {
+    const { t } = useTranslation(); // Dùng hook dịch
+
     const FooterItem = ({ href, icon, text, color, bgColor, isBrand }) => (
         <Typography.Link
             href={href}
@@ -15,20 +18,24 @@ function AppFooter() {
             style={{
                 display: "flex",
                 alignItems: "center",
-                // Giữ padding gọn
-                padding: "6px 10px", 
-                borderRadius: 10, // Giảm bo tròn nhẹ
+                padding: "6px 12px", 
+                borderRadius: 10,
                 backgroundColor: bgColor,
                 transition: "all 0.3s ease",
                 textDecoration: "none",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.08)", // Bóng nhẹ hơn
+                boxShadow: "0 2px 5px rgba(0,0,0,0.1)", 
                 flexShrink: 0,
+                // Hiệu ứng hover nhẹ nhàng
+                '&:hover': {
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    transform: 'translateY(-1px)',
+                }
             }}
         >
             <span
                 style={{
                     color: color,
-                    fontSize: "16px", // Giảm kích thước icon
+                    fontSize: "16px",
                     marginRight: "6px",
                     fontWeight: 600,
                 }}
@@ -39,7 +46,7 @@ function AppFooter() {
                 style={{
                     color: isBrand ? color : "#333",
                     fontWeight: isBrand ? 700 : 500,
-                    fontSize: "14px", // Giảm kích thước chữ
+                    fontSize: "14px",
                 }}
             >
                 {text}
@@ -49,56 +56,55 @@ function AppFooter() {
 
     return (
         <div
-            className="AppFooter" 
+            className="AppFooter"
             style={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 fontFamily: "Inter, sans-serif",
                 
-                // NÂNG CẤP THẨM MỸ: Glassmorphism Effect
-                background: "rgba(255, 255, 255, 0.95)", // Hơi trong suốt
-                backdropFilter: 'blur(5px)', 
+                // ---  GLASSMORPHISM & SHADOW CHO TOÀN BỘ FOOTER ---
+                background: "rgba(255, 255, 255, 0.75)", 
+                backdropFilter: 'blur(10px)', 
+                boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.05)", 
                 
-                // Cần đảm bảo padding đủ để Footer Item hiển thị
-                padding: "8px 24px", 
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000, 
+                padding: "2px 24px", 
             }}
         >
             
-            {/* Giảm size space cho Footer Item */}
-            <Space size="middle"> 
+            <Space size="large"> {/* Tăng khoảng cách giữa các item */}
                 <FooterItem
                     href="https://www.google.com"
                     icon={<ShopOutlined />}
-                    text="L-M Shop"
-                    color="#1677ff"
-                    bgColor="#e6f4ff" // Màu nền nhạt hơn
+                    text={t("footer_brand_name")} // 
+                    bgColor="#e6f4ff"
                     isBrand={true}
                 />
                 <FooterItem
                     href="tel:+123456789"
                     icon={<PhoneOutlined />}
-                    text="+123456789"
+                    text={t("footer_phone_number")} // 
                     color="#00b96b"
                     bgColor="#e6fffb"
                 />
                 <FooterItem
                     href="https://www.google.com/maps"
                     icon={<EnvironmentOutlined />}
-                    text="186 Nguyen Huu Tho"
+                    text={t("footer_address")} // 👈Dịch
                     color="#fa8c16"
                     bgColor="#fff7e6"
                 />
             </Space>
 
-            
-            {/* Khối trạng thái hệ thống */}
             <div
                 style={{
                     position: "absolute",
-                    /* ✅ SỬA: Chuyển sang left để tránh bị Side Menu che trên màn hình nhỏ */
-                    left: "24px", 
-                    right: "auto", 
+                    left: "24px",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
@@ -109,7 +115,7 @@ function AppFooter() {
                     <CheckCircleOutlined />
                 </Typography.Text>
                 <Typography.Text strong style={{ color: "#555" }}>
-                    Hệ thống hoạt động
+                    {t("footer_system_status")} {/* 👈 Dịch */}
                 </Typography.Text>
             </div>
         </div>
