@@ -104,7 +104,7 @@ function Inventory() {
                         item.id === editingProduct.id ? { ...item, ...values } : item
                     )
                 );
-                message.success(t("inventory_update_success")); // 👈 Dịch thông báo
+                message.success(t("inventory_update_success")); //  Dịch thông báo
             } else {
                 // thêm mới
                 const newProduct = {
@@ -114,7 +114,7 @@ function Inventory() {
                     title_en: values.title, 
                 };
                 setDataSource((prev) => [newProduct, ...prev]);
-                message.success(t("inventory_add_success")); // 👈 Dịch thông báo
+                message.success(t("inventory_add_success")); //  Dịch thông báo
             }
             closeModal();
         });
@@ -123,13 +123,13 @@ function Inventory() {
     //  Xóa sản phẩm
     const handleDelete = (id) => {
         setDataSource((prev) => prev.filter((item) => item.id !== id));
-        message.success(t("inventory_delete_success")); // 👈 Dịch thông báo
+        message.success(t("inventory_delete_success")); //  Dịch thông báo
     };
 
     // Cấu hình cột với i18n
     const columns = [
         {
-            title: t("inventory_col_image"), // 👈 Dịch
+            title: t("inventory_col_image"), //  Dịch
             dataIndex: "thumbnail",
             render: (link) => (
                 <Avatar
@@ -142,7 +142,7 @@ function Inventory() {
             width: 90,
         },
         {
-            title: t("inventory_col_name"), // 👈 Dịch
+            title: t("inventory_col_name"), //  Dịch
             // Hiển thị tên sản phẩm theo ngôn ngữ hiện tại
             dataIndex: i18n.language === 'en' ? "title_en" : "title", 
             width: 220,
@@ -153,7 +153,7 @@ function Inventory() {
             ),
         },
         {
-            title: `${t("inventory_col_price")} (${i18n.language === 'vi' ? 'VNĐ' : 'USD'})`, // 👈 Dịch & hiển thị đơn vị
+            title: `${t("inventory_col_price")} (${i18n.language === 'vi' ? 'VNĐ' : 'USD'})`, //  Dịch & hiển thị đơn vị
             dataIndex: "price",
             render: (value) => (
                 <Typography.Text style={{ color: "#000000ff", fontWeight: 500 }}>
@@ -163,7 +163,7 @@ function Inventory() {
             width: 150,
         },
         {
-            title: t("inventory_col_rating"), // 👈 Dịch
+            title: t("inventory_col_rating"), //  Dịch
             dataIndex: "rating",
             render: (rating) => (
                 <Rate
@@ -176,7 +176,7 @@ function Inventory() {
             width: 200,
         },
         {
-            title: t("inventory_col_stock"), // 👈 Dịch
+            title: t("inventory_col_stock"), //  Dịch
             dataIndex: "stock",
             width: 100,
             render: (stock) => (
@@ -194,19 +194,19 @@ function Inventory() {
             ),
         },
         {
-            title: t("inventory_col_brand"), // 👈 Dịch
+            title: t("inventory_col_brand"), //  Dịch
             dataIndex: "brand",
             width: 140,
         },
         {
-            title: t("inventory_col_category"), // 👈 Dịch
+            title: t("inventory_col_category"), //  Dịch
             dataIndex: "category",
             width: 140,
             // Dịch các giá trị Category
             render: (text) => t(text), 
         },
         {
-            title: t("inventory_col_actions"), // 👈 Dịch
+            title: t("inventory_col_actions"), //  Dịch
             key: "actions",
             width: 150,
             render: (_, record) => (
@@ -216,10 +216,10 @@ function Inventory() {
                         onClick={() => openModal(record)}
                     />
                     <Popconfirm
-                        title={t("inventory_confirm_delete")} // 👈 Dịch
+                        title={t("inventory_confirm_delete")} //  Dịch
                         onConfirm={() => handleDelete(record.id)}
-                        okText={t("delete")} // 👈 Dịch
-                        cancelText={t("cancel")} // 👈 Dịch
+                        okText={t("delete")} //  Dịch
+                        cancelText={t("cancel")} //  Dịch
                     >
                         <Button danger icon={<DeleteOutlined />} />
                     </Popconfirm>
@@ -267,7 +267,7 @@ function Inventory() {
                            boxShadow: "0 3px 6px rgba(128,0,128,0.3)",
                         }}
                     />
-                    <span style={{ fontWeight: 600 }}>{t("inventory")}</span> {/* 👈 Dịch */}
+                    <span style={{ fontWeight: 600 }}>{t("inventory")}</span> {/*  Dịch */}
                 </Typography.Title>
 
                 <Button
@@ -279,7 +279,7 @@ function Inventory() {
                     }}
                     onClick={() => openModal()}
                 >
-                    {t("inventory_add_product")} {/* 👈 Dịch */}
+                    {t("inventory_add_product")} {/*  Dịch */}
                 </Button>
             </div>
 
@@ -313,12 +313,12 @@ function Inventory() {
             {/* --- MODAL THÊM / CẬP NHẬT --- */}
             <Modal
                 title={
-                    editingProduct ? `📝 ${t("inventory_modal_update")}` : `➕ ${t("inventory_modal_add")}` // 👈 Dịch
+                    editingProduct ? `📝 ${t("inventory_modal_update")}` : `➕ ${t("inventory_modal_add")}` //  Dịch
                 }
                 open={isModalOpen}
                 onCancel={closeModal}
                 onOk={handleSave}
-                okText={editingProduct ? t("update") : t("add")} // 👈 Dịch
+                okText={editingProduct ? t("update") : t("add")} //  Dịch
                 centered
             >
                 <Form
@@ -328,34 +328,34 @@ function Inventory() {
                 >
                     <Form.Item
                         name="title"
-                        label={t("inventory_label_name")} // 👈 Dịch
-                        rules={[{ required: true, message: t("inventory_msg_name_required") }]} // 👈 Dịch
+                        label={t("inventory_label_name")} //  Dịch
+                        rules={[{ required: true, message: t("inventory_msg_name_required") }]} //  Dịch
                     >
-                        <Input placeholder={t("inventory_placeholder_name")} /> {/* 👈 Dịch */}
+                        <Input placeholder={t("inventory_placeholder_name")} /> {/*  Dịch */}
                     </Form.Item>
                     <Form.Item
                         name="price"
-                        label={t("inventory_label_price")} // 👈 Dịch
-                        rules={[{ required: true, message: t("inventory_msg_price_required") }]} // 👈 Dịch
+                        label={t("inventory_label_price")} //  Dịch
+                        rules={[{ required: true, message: t("inventory_msg_price_required") }]} //  Dịch
                     >
                         <InputNumber
                             style={{ width: "100%" }}
                             min={0}
-                            placeholder={t("inventory_placeholder_price")} // 👈 Dịch
+                            placeholder={t("inventory_placeholder_price")} //  Dịch
                         />
                     </Form.Item>
-                    <Form.Item name="rating" label={t("inventory_label_rating")}> {/* 👈 Dịch */}
+                    <Form.Item name="rating" label={t("inventory_label_rating")}> {/*  Dịch */}
                         <Rate allowHalf />
                     </Form.Item>
-                    <Form.Item name="stock" label={t("inventory_label_stock")}> {/* 👈 Dịch */}
+                    <Form.Item name="stock" label={t("inventory_label_stock")}> {/*  Dịch */}
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
-                    <Form.Item name="brand" label={t("inventory_label_brand")}> {/* 👈 Dịch */}
-                        <Input placeholder={t("inventory_placeholder_brand")} /> {/* 👈 Dịch */}
+                    <Form.Item name="brand" label={t("inventory_label_brand")}> {/*  Dịch */}
+                        <Input placeholder={t("inventory_placeholder_brand")} /> {/*  Dịch */}
                     </Form.Item>
-                    <Form.Item name="category" label={t("inventory_label_category")}> {/* 👈 Dịch */}
+                    <Form.Item name="category" label={t("inventory_label_category")}> {/*  Dịch */}
                         <Select
-                            placeholder={t("inventory_placeholder_category")} // 👈 Dịch
+                            placeholder={t("inventory_placeholder_category")} //  Dịch
                             options={[
                                 // Sử dụng key dịch cho nhãn (label)
                                 { value: "electronics", label: t("electronics") },
@@ -366,8 +366,8 @@ function Inventory() {
                             ]}
                         />
                     </Form.Item>
-                    <Form.Item name="thumbnail" label={t("inventory_label_image_link")}> {/* 👈 Dịch */}
-                        <Input placeholder={t("inventory_placeholder_image_link")} /> {/* 👈 Dịch */}
+                    <Form.Item name="thumbnail" label={t("inventory_label_image_link")}> {/* Dịch */}
+                        <Input placeholder={t("inventory_placeholder_image_link")} /> {/* Dịch */}
                     </Form.Item>
                 </Form>
             </Modal>

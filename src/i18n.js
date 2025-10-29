@@ -145,9 +145,9 @@ const resources = {
       "promo_card_loyalty_config": "Cấu hình Cấp độ Khách hàng Thân thiết", "promo_loyalty_tier_silver": "Bạc",
       "promo_loyalty_tier_gold": "Vàng", "promo_loyalty_tier_diamond": "Kim Cương", "promo_label_spending_threshold": "Ngưỡng chi tiêu",
       "promo_loyalty_unlimited": "Trở lên", "promo_label_benefits": "Quyền lợi", "promo_card_member_list": "Danh sách Hội viên",
-      "promo_loyalty_silver_benefit": "1x điểm tích lũy, 1 voucher giảm giá 20 % cho tất cả các loại hàng",
+      "promo_loyalty_silver_benefit": "1x điểm tích lũy, 1 voucher giảm giá 5 %",
       "promo_loyalty_gold_benefit": "1.5x điểm tích lũy, 1 voucher sinh nhật",
-      "promo_loyalty_diamond_benefit": "2x điểm tích lũy, Miễn phí vận chuyển, voucher trị giá 25% cửa hàng trên toàn quốc",
+      "promo_loyalty_diamond_benefit": "2x điểm tích lũy, Miễn phí vận chuyển,voucher giảm giá 25% ",
 
 
       // HELP PAGE
@@ -322,9 +322,9 @@ const resources = {
       "promo_card_loyalty_config": "Loyalty Tier Configuration", "promo_loyalty_tier_silver": "Silver",
       "promo_loyalty_tier_gold": "Gold", "promo_loyalty_tier_diamond": "Diamond", "promo_label_spending_threshold": "Spending Threshold",
       "promo_loyalty_unlimited": "and above", "promo_label_benefits": "Benefits", "promo_card_member_list": "Member List",
-      "promo_loyalty_silver_benefit": "1x points, 20% off voucher for all products",
+      "promo_loyalty_silver_benefit": "1x points, 5% off voucher for all products",
       "promo_loyalty_gold_benefit": "1.5x points, 1 birthday voucher",
-      "promo_loyalty_diamond_benefit": "2x points, Free Shipping, 25% storewide voucher",
+      "promo_loyalty_diamond_benefit": "2x points, Free Shipping, 25% discount voucher product",
 
       // HELP PAGE
       "help_title": "Support & Diagnostic Center", "help_subtitle": "Check system status, search documentation, and submit support requests quickly.",
@@ -375,7 +375,7 @@ i18n
   .init({
     resources,
     lng: initialLang, 
-    fallbackLng: "vi", 
+    fallbackLng: "vi",  
     debug: false, 
     interpolation: {
       escapeValue: false 

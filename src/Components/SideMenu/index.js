@@ -10,13 +10,13 @@ import {
 import { Menu } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // 👈 IMPORT useTranslation
+import { useTranslation } from "react-i18next"; //  IMPORT useTranslation
 
 
 const DARK_BACKGROUND = "#001529";
 
 function SideMenu() {
-    // 👈 SỬ DỤNG HOOK DỊCH
+    //  SỬ DỤNG HOOK DỊCH
     const { t } = useTranslation();
     
     const location = useLocation();
@@ -55,7 +55,7 @@ function SideMenu() {
                     navigate(item.key);
                 }}
                 selectedKeys={[selectedKeys]}
-                // 👈 DỊCH CÁC NHÃN MENU
+                //  DỊCH CÁC NHÃN MENU
                 items={[
                     {
                         label: t("overview"),

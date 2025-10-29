@@ -82,7 +82,7 @@ const mockSearchData = [
 // --- MAIN COMPONENT: APPHEADER ---
 // =================================================================
 
-function AppHeader({ toggleSideMenu }) {
+function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 Thêm props isDarkMode, onToggleDarkMode
     
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
@@ -93,7 +93,7 @@ function AppHeader({ toggleSideMenu }) {
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [adminOpen, setAdminOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
+    // const [darkMode, setDarkMode] = useState(false); // 👈 Bỏ state này, dùng prop isDarkMode
     const [systemSettings, setSystemSettings] = useState({
         notifications: true,
         autoUpdate: false,
@@ -136,13 +136,14 @@ function AppHeader({ toggleSideMenu }) {
     );
 
     const handleToggleDarkMode = useCallback(() => {
-        setDarkMode((prev) => !prev);
+        const newDarkMode = !isDarkMode; // Lấy trạng thái mới
+        onToggleDarkMode(newDarkMode); // Kích hoạt hàm bên ngoài
         message.info(
             t("dark_mode_status", {
-                status: !darkMode ? t("switch_to_dark") : t("switch_to_light"),
+                status: newDarkMode ? t("switch_to_dark") : t("switch_to_light"),
             })
         );
-    }, [darkMode, t]);
+    }, [isDarkMode, onToggleDarkMode, t]); // 👈 Cập nhật dependency
 
     const handleIconHover = (e, isEntering, iconColor = "#555") => {
         const target = e.currentTarget;
@@ -151,7 +152,7 @@ function AppHeader({ toggleSideMenu }) {
             target.style.backgroundColor = PRIMARY_COLOR;
             if (icon) icon.style.color = "white";
         } else {
-            target.style.backgroundColor = "#f5f5f5";
+            target.style.backgroundColor = isDarkMode ? '#1e1e1e' : "#f5f5f5"; // 👈 Sửa màu nền hover cho dark mode
             if (icon) icon.style.color = iconColor;
         }
     };
@@ -263,7 +264,7 @@ function AppHeader({ toggleSideMenu }) {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                background: "#fff",
+                background: isDarkMode ? '#1e1e1e' : "#fff", // 👈 Áp dụng Dark Mode
                 padding: "10px 25px",
             }}
         >
@@ -276,7 +277,7 @@ function AppHeader({ toggleSideMenu }) {
             >
                 <Typography.Title level={3} style={{ margin: 0 }}>
                     <img
-                        src="https://i.imgur.com/sf3D9V9.png"
+                        src="https://i.imgur.com/XgFmg6W.png"
                         alt="Logo"
                         style={{ height: 48, objectFit: "contain" }}
                     />
@@ -295,11 +296,17 @@ function AppHeader({ toggleSideMenu }) {
                 onSelect={onSearch}
             >
                 <Input
-                    prefix={<SearchOutlined style={{ color: "#aaa" }} />}
+                    prefix={<SearchOutlined style={{ color: isDarkMode ? '#888' : "#aaa" }} />}
                     placeholder={t("search_placeholder")}
                     allowClear
                     onPressEnter={(e) => onSearch(e.target.value)}
-                    style={{ borderRadius: 8, height: 40 }}
+                    style={{ 
+                        borderRadius: 8, 
+                        height: 40,
+                        backgroundColor: isDarkMode ? '#333' : '#fff', // 👈 Dark Mode
+                        color: isDarkMode ? '#fff' : '#000', // 👈 Dark Mode
+                        borderColor: isDarkMode ? '#444' : '#d9d9d9', // 👈 Dark Mode
+                    }}
                 />
             </AutoComplete>
 
@@ -310,7 +317,14 @@ function AppHeader({ toggleSideMenu }) {
                     value={i18n.language}
                     onChange={handleChangeLanguage}
                     // Đảm bảo chiều cao 40px, style cho căn chỉnh
-                    style={{ width: 140, height: 40, lineHeight: '40px', verticalAlign: 'middle' }} 
+                    style={{ 
+                        width: 140, 
+                        height: 40, 
+                        lineHeight: '40px', 
+                        verticalAlign: 'middle', 
+                        backgroundColor: isDarkMode ? '#333' : 'transparent', // 👈 Dark Mode
+                        color: isDarkMode ? '#fff' : '#000', // 👈 Dark Mode
+                    }} 
                     bordered={false}
                     dropdownStyle={{ minWidth: 150 }}
                     optionLabelProp="label"
@@ -351,31 +365,31 @@ function AppHeader({ toggleSideMenu }) {
                         <BulbOutlined
                             style={{
                                 fontSize: 22,
-                                color: "#FFD700",
-                                filter: "drop-shadow(0 0 4px #FFD700)",
+                                color: isDarkMode ? "#ffc53d" : "#FFD700", // 👈 Màu icon cho Dark Mode
+                                filter: isDarkMode ? "drop-shadow(0 0 4px #ffc53d)" : "drop-shadow(0 0 4px #FFD700)",
                             }}
                         />
                     }
-                    onClick={handleToggleDarkMode}
+                    onClick={handleToggleDarkMode} // 👈 SỬ DỤNG HÀM MỚI
                     style={{
-                        backgroundColor: "#fff7e6",
+                        backgroundColor: isDarkMode ? "#3e3e1e" : "#fff7e6", // 👈 Màu nền cho Dark Mode
                         borderColor: "transparent",
-                        boxShadow: "0 0 6px rgba(255, 215, 0, 0.4)",
+                        boxShadow: isDarkMode ? "0 0 6px rgba(255, 197, 61, 0.4)" : "0 0 6px rgba(255, 215, 0, 0.4)",
                         width: 40, 
                         height: 40,
                     }}
-                    onMouseEnter={(e) => handleIconHover(e, true, "#FFD700")}
-                    onMouseLeave={(e) => handleIconHover(e, false, "#FFD700")}
+                    onMouseEnter={(e) => handleIconHover(e, true, isDarkMode ? "#ffc53d" : "#FFD700")}
+                    onMouseLeave={(e) => handleIconHover(e, false, isDarkMode ? "#ffc53d" : "#FFD700")}
                 />
 
                 <Badge count={comments.length}>
                     <Button
                         type="default"
                         shape="circle"
-                        icon={<MailOutlined style={{ fontSize: 20, color: "#555" }} />}
+                        icon={<MailOutlined style={{ fontSize: 20, color: isDarkMode ? '#ccc' : "#555" }} />}
                         onClick={() => setCommentsOpen(true)}
                         style={{ 
-                            backgroundColor: "#f5f5f5", 
+                            backgroundColor: isDarkMode ? '#333' : "#f5f5f5", // 👈 Dark Mode
                             borderColor: "transparent",
                             width: 40, 
                             height: 40,
@@ -389,10 +403,10 @@ function AppHeader({ toggleSideMenu }) {
                     <Button
                         type="default"
                         shape="circle"
-                        icon={<BellOutlined style={{ fontSize: 20, color: "#555" }} />}
+                        icon={<BellOutlined style={{ fontSize: 20, color: isDarkMode ? '#ccc' : "#555" }} />}
                         onClick={() => setNotificationsOpen(true)}
                         style={{ 
-                            backgroundColor: "#f5f5f5", 
+                            backgroundColor: isDarkMode ? '#333' : "#f5f5f5", // 👈 Dark Mode
                             borderColor: "transparent",
                             width: 40, 
                             height: 40,
@@ -407,7 +421,7 @@ function AppHeader({ toggleSideMenu }) {
                         style={{
                             cursor: "pointer",
                             padding: "4px 4px",
-                            background: "#f5f7fa",
+                            background: isDarkMode ? '#333' : "#f5f7fa", // 👈 Dark Mode
                             borderRadius: 25,
                             transition: "all 0.2s ease",
                             display: 'flex', 
@@ -416,8 +430,8 @@ function AppHeader({ toggleSideMenu }) {
                             height: 40, 
                             width: 40,
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#e6f4ff")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "#f5f7fa")}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = isDarkMode ? "#444" : "#e6f4ff")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = isDarkMode ? "#333" : "#f5f7fa")}
                     >
                         <Avatar
                             src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
@@ -434,21 +448,23 @@ function AppHeader({ toggleSideMenu }) {
                 open={commentsOpen}
                 onClose={() => setCommentsOpen(false)}
                 maskClosable
+                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} // 👈 Dark Mode
             >
-                <List dataSource={comments} renderItem={(item) => <List.Item>{item.body}</List.Item>} />
+                <List dataSource={comments} renderItem={(item) => <List.Item style={{ color: isDarkMode ? '#ccc' : '#000' }}>{item.body}</List.Item>} />
             </Drawer>
             <Drawer
                 title={t("order_notification")}
                 open={notificationsOpen}
                 onClose={() => setNotificationsOpen(false)}
                 maskClosable
+                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} // 👈 Dark Mode
             >
                 <List
                     dataSource={orders}
                     renderItem={(item) => (
                         <List.Item>
-                            <Typography.Text strong>{item.title}</Typography.Text>{" "}
-                            {t("order_placed")}
+                            <Typography.Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>{item.title}</Typography.Text>{" "}
+                            <Typography.Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>{t("order_placed")}</Typography.Text>
                         </List.Item>
                     )}
                 />
@@ -460,29 +476,30 @@ function AppHeader({ toggleSideMenu }) {
                 onCancel={() => setAdminOpen(false)}
                 footer={null}
                 centered
+                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} // 👈 Dark Mode
             >
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Avatar
                         size={90}
                         src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
                     />
-                    <Typography.Title level={4} style={{ marginTop: 10 }}>
+                    <Typography.Title level={4} style={{ marginTop: 10, color: isDarkMode ? '#fff' : '#000' }}>
                         Doãn Bá Min
                     </Typography.Title>
                     <Typography.Text type="secondary">{t("system_admin")}</Typography.Text>
                 </div>
                 <Form layout="vertical">
                     <Form.Item label={t("username")}>
-                        <Input value="admin_lm" disabled />
+                        <Input value="admin_lm" disabled style={{ backgroundColor: isDarkMode ? '#444' : '#f5f5f5', color: isDarkMode ? '#ccc' : '#000' }} />
                     </Form.Item>
                     <Form.Item label="Email">
-                        <Input value="admin@lmcompany.com" />
+                        <Input value="admin@lmcompany.com" style={{ backgroundColor: isDarkMode ? '#444' : '#fff', color: isDarkMode ? '#fff' : '#000' }} />
                     </Form.Item>
                     <Form.Item label={t("phone_number")}>
-                        <Input value="0909 999 999" />
+                        <Input value="0909 999 999" style={{ backgroundColor: isDarkMode ? '#444' : '#fff', color: isDarkMode ? '#fff' : '#000' }} />
                     </Form.Item>
                     <Form.Item label={t("role")}>
-                        <Input value={t("system_admin")} disabled />
+                        <Input value={t("system_admin")} disabled style={{ backgroundColor: isDarkMode ? '#444' : '#f5f5f5', color: isDarkMode ? '#ccc' : '#000' }} />
                     </Form.Item>
                     <Space style={{ display: "flex", justifyContent: "space-between" }}>
                         <Button type="primary" icon={<EditOutlined />}>
@@ -508,9 +525,10 @@ function AppHeader({ toggleSideMenu }) {
                     </Button>,
                 ]}
                 centered
+                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} // 👈 Dark Mode
             >
                 <Form layout="vertical">
-                    <Form.Item label={t("notifications_mode")}>
+                    <Form.Item label={t("notifications_mode")} style={{ color: isDarkMode ? '#fff' : '#000' }}>
                         <Switch
                             checked={systemSettings.notifications}
                             onChange={(checked) =>
@@ -520,7 +538,7 @@ function AppHeader({ toggleSideMenu }) {
                             unCheckedChildren={t("off")}
                         />
                     </Form.Item>
-                    <Form.Item label={t("auto_update")}>
+                    <Form.Item label={t("auto_update")} style={{ color: isDarkMode ? '#fff' : '#000' }}>
                         <Switch
                             checked={systemSettings.autoUpdate}
                             onChange={(checked) =>
@@ -533,18 +551,19 @@ function AppHeader({ toggleSideMenu }) {
 
                     <Divider />
 
-                    <Form.Item label={t("interface")}>
+                    <Form.Item label={t("interface")} style={{ color: isDarkMode ? '#fff' : '#000' }}>
                         <Button
-                            type={darkMode ? "default" : "primary"}
+                            type={isDarkMode ? "default" : "primary"}
                             icon={<BulbOutlined />}
-                            onClick={handleToggleDarkMode}
+                            onClick={handleToggleDarkMode} // 👈 SỬ DỤNG HÀM MỚI
                             style={{
                                 width: "100%",
-                                background: darkMode ? "#333" : "#fff",
-                                color: darkMode ? "#fff" : "#000",
+                                background: isDarkMode ? "#333" : "#fff",
+                                color: isDarkMode ? "#fff" : "#000",
+                                borderColor: isDarkMode ? '#555' : '#1677ff',
                             }}
                         >
-                            {darkMode ? t("switch_to_light") : t("switch_to_dark")}
+                            {isDarkMode ? t("switch_to_light") : t("switch_to_dark")}
                         </Button>
                     </Form.Item>
                 </Form>

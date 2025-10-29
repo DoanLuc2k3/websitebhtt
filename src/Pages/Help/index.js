@@ -28,14 +28,14 @@ import {
     SearchOutlined, 
     ToolOutlined, 
 } from "@ant-design/icons";
-import { useTranslation } from "react-i18next"; // 👈 IMPORT useTranslation
+import { useTranslation } from "react-i18next"; //  IMPORT useTranslation
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea, Search } = Input;
 const { Option } = Select;
 
 const SupportDashboard = () => {
-    const { t } = useTranslation(); // 👈 Dùng hook dịch
+    const { t } = useTranslation(); //  Dùng hook dịch
 
     const [diagnosisId, setDiagnosisId] = useState("");
     const [form] = Form.useForm();
@@ -63,17 +63,17 @@ const SupportDashboard = () => {
         {
             version: "v2.1.0",
             date: "20/10/2025",
-            changes: t("help_update_changes_1"), // 👈 Dịch
+            changes: t("help_update_changes_1"), //  Dịch
         },
         {
             version: "v2.0.5",
             date: "12/10/2025",
-            changes: t("help_update_changes_2"), // 👈 Dịch
+            changes: t("help_update_changes_2"), //  Dịch
         },
         {
             version: "v2.0.0",
             date: "11/10/2025",
-            changes: t("help_update_changes_3"), // 👈 Dịch
+            changes: t("help_update_changes_3"), //  Dịch
         },
     ]);
 
@@ -81,14 +81,14 @@ const SupportDashboard = () => {
     // Logic chạy chẩn đoán
     const handleRunDiagnosis = () => {
         if (!diagnosisId) {
-            message.warning(t("help_msg_enter_id")); // 👈 Dịch
+            message.warning(t("help_msg_enter_id")); //  Dịch
             return;
         }
         // Thực tế: gọi API chẩn đoán tại đây
-        message.loading({ content: t('help_msg_diag_running', { id: diagnosisId }), key: 'diag' }); // 👈 Dịch
+        message.loading({ content: t('help_msg_diag_running', { id: diagnosisId }), key: 'diag' }); // Dịch
         setTimeout(() => {
             message.success({ 
-                content: t('help_msg_diag_complete', { id: diagnosisId }), // 👈 Dịch
+                content: t('help_msg_diag_complete', { id: diagnosisId }), //  Dịch
                 key: 'diag', 
                 duration: 3 
             });
@@ -99,17 +99,17 @@ const SupportDashboard = () => {
     // Form gửi phản hồi
     const onFinish = (values) => {
         console.log(values);
-        message.success(t("help_msg_feedback_success")); // 👈 Dịch
+        message.success(t("help_msg_feedback_success")); //  Dịch
         form.resetFields();
     };
 
     // Hàm tạo Card chung với style đồng bộ
-    const StyledCard = ({ titleKey, icon, children, style = {} }) => ( // 👈 Dùng key
+    const StyledCard = ({ titleKey, icon, children, style = {} }) => ( //  Dùng key
         <Card 
             title={
                 <Space style={{ color: PRIMARY_PURPLE }}>
                     {React.cloneElement(icon, { style: { color: PRIMARY_PURPLE, fontSize: 18 } })}
-                    <Text strong style={{ color: PRIMARY_PURPLE }}>{t(titleKey)}</Text> {/* 👈 Dịch */}
+                    <Text strong style={{ color: PRIMARY_PURPLE }}>{t(titleKey)}</Text> {/*  Dịch */}
                 </Space>
             } 
             bordered={false} 
@@ -137,10 +137,10 @@ const SupportDashboard = () => {
                 >
                     <InfoCircleOutlined style={{ color: PRIMARY_BLUE, fontSize: '20px' }} />
                 </div>
-                {t("help_title")} {/* 👈 Dịch */}
+                {t("help_title")} {/*  Dịch */}
             </Title>
             <Paragraph type="secondary" style={{ marginBottom: 30 }}>
-                {t("help_subtitle")} {/* 👈 Dịch */}
+                {t("help_subtitle")} {/*  Dịch */}
             </Paragraph>
 
             <Row gutter={[24, 24]}>
@@ -151,17 +151,17 @@ const SupportDashboard = () => {
                     {/* 1. Công cụ Chẩn đoán nhanh */}
                     <StyledCard titleKey="help_card_diagnosis" icon={<ToolOutlined />}>
                         <Space direction="vertical" style={{ width: '100%' }}>
-                            <Text type="secondary">{t("help_text_enter_id")}</Text> {/* 👈 Dịch */}
+                            <Text type="secondary">{t("help_text_enter_id")}</Text> {/*  Dịch */}
                             <Input.Group compact>
                                 <Input
                                     style={{ width: 'calc(100% - 100px)' }}
-                                    placeholder={t("help_input_placeholder")} // 👈 Dịch
+                                    placeholder={t("help_input_placeholder")} //  Dịch
                                     prefix={<SearchOutlined />}
                                     value={diagnosisId}
                                     onChange={(e) => setDiagnosisId(e.target.value)}
                                 />
                                 <Button type="primary" onClick={handleRunDiagnosis} style={{ width: 100 }}>
-                                    {t("help_btn_run")} {/* 👈 Dịch */}
+                                    {t("help_btn_run")} {/*  Dịch */}
                                 </Button>
                             </Input.Group>
                         </Space>
@@ -180,7 +180,7 @@ const SupportDashboard = () => {
                                         <Text strong>{item.name}</Text>
                                     </Space>
                                     <Tag color={item.color} style={{ fontWeight: 600 }}>
-                                        {t(`help_status_${item.status_key}`)} {/* 👈 Dịch */}
+                                        {t(`help_status_${item.status_key}`)} {/*  Dịch */}
                                     </Tag>
                                 </List.Item>
                             )}
@@ -213,14 +213,14 @@ const SupportDashboard = () => {
                     {/* 4. Hướng dẫn nhanh & Tìm kiếm Tài liệu */}
                     <StyledCard titleKey="help_card_search" icon={<QuestionCircleOutlined />}>
                         <Search 
-                            placeholder={t("help_search_placeholder")} // 👈 Dịch
-                            enterButton={t("help_search_btn")} // 👈 Dịch
+                            placeholder={t("help_search_placeholder")} //  Dịch
+                            enterButton={t("help_search_btn")} //  Dịch
                             size="large"
                             style={{ marginBottom: 16 }}
                         />
                         
                         <List
-                            header={<Text strong>{t("help_faq_header")}</Text>} // 👈 Dịch
+                            header={<Text strong>{t("help_faq_header")}</Text>} //  Dịch
                             dataSource={quickHelps}
                             renderItem={(item) => (
                                 <List.Item style={{ padding: '8px 0' }}>
@@ -238,24 +238,24 @@ const SupportDashboard = () => {
                     {/* 5. Form gửi phản hồi (Ticket nội bộ) */}
                     <StyledCard titleKey="help_card_feedback" icon={<MessageOutlined />}>
                         <Form layout="vertical" form={form} onFinish={onFinish}>
-                            <Form.Item label={t("help_label_category")} name="category" rules={[{ required: true, message: t("help_msg_select_category") }]}> {/* 👈 Dịch */}
-                                <Select placeholder={t("help_placeholder_select_category")}> {/* 👈 Dịch */}
-                                    <Option value="bug">{t("help_select_bug")}</Option> {/* 👈 Dịch */}
-                                    <Option value="feature">{t("help_select_feature")}</Option> {/* 👈 Dịch */}
-                                    <Option value="question">{t("help_select_question")}</Option> {/* 👈 Dịch */}
+                            <Form.Item label={t("help_label_category")} name="category" rules={[{ required: true, message: t("help_msg_select_category") }]}> {/*  Dịch */}
+                                <Select placeholder={t("help_placeholder_select_category")}> {/*  Dịch */}
+                                    <Option value="bug">{t("help_select_bug")}</Option> {/*  Dịch */}
+                                    <Option value="feature">{t("help_select_feature")}</Option> {/*  Dịch */}
+                                    <Option value="question">{t("help_select_question")}</Option> {/*  Dịch */}
                                 </Select>
                             </Form.Item>
                             
-                            <Form.Item label={t("help_label_name")} name="name" rules={[{ required: true, message: t("help_msg_enter_name") }]}> {/* 👈 Dịch */}
-                                <Input placeholder={t("help_placeholder_your_name")} /> {/* 👈 Dịch */}
+                            <Form.Item label={t("help_label_name")} name="name" rules={[{ required: true, message: t("help_msg_enter_name") }]}> {/*  Dịch */}
+                                <Input placeholder={t("help_placeholder_your_name")} /> {/*  Dịch */}
                             </Form.Item>
                             
-                            <Form.Item label={t("help_label_content")} name="feedback" rules={[{ required: true, message: t("help_msg_enter_feedback") }]}> {/* 👈 Dịch */}
-                                <TextArea rows={3} placeholder={t("help_feedback_placeholder")} /> {/* 👈 Dịch */}
+                            <Form.Item label={t("help_label_content")} name="feedback" rules={[{ required: true, message: t("help_msg_enter_feedback") }]}> {/*  Dịch */}
+                                <TextArea rows={3} placeholder={t("help_feedback_placeholder")} /> {/*  Dịch */}
                             </Form.Item>
                             
                             <Button type="primary" htmlType="submit" block>
-                                {t("help_btn_submit")} {/* 👈 Dịch */}
+                                {t("help_btn_submit")} {/*  Dịch */}
                             </Button>
                         </Form>
                     </StyledCard>
@@ -267,7 +267,7 @@ const SupportDashboard = () => {
                         title={
                             <Space style={{ color: PRIMARY_PURPLE }}>
                                 <PhoneOutlined style={{ color: PRIMARY_PURPLE, fontSize: 18 }} /> 
-                                <Text strong style={{ color: PRIMARY_PURPLE }}>{t("help_card_contact")}</Text> {/* 👈 Dịch */}
+                                <Text strong style={{ color: PRIMARY_PURPLE }}>{t("help_card_contact")}</Text> {/*  Dịch */}
                             </Space>
                         }
                         style={{ marginTop: 24, borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
@@ -286,7 +286,7 @@ const SupportDashboard = () => {
                                     bordered={false}
                                 >
                                     <Paragraph style={{ margin: 0 }}>
-                                        <Text type="secondary" style={{ display: 'block' }}>{t("help_contact_email")}</Text> {/* 👈 Dịch */}
+                                        <Text type="secondary" style={{ display: 'block' }}>{t("help_contact_email")}</Text> {/*  Dịch */}
                                         <Text strong><MailOutlined style={{ marginRight: 6 }} /> bamin.com</Text>
                                     </Paragraph>
                                 </Card>
@@ -303,7 +303,7 @@ const SupportDashboard = () => {
                                     bordered={false}
                                 >
                                     <Paragraph style={{ margin: 0 }}>
-                                        <Text type="secondary" style={{ display: 'block' }}>{t("help_contact_hotline")}</Text> {/* 👈 Dịch */}
+                                        <Text type="secondary" style={{ display: 'block' }}>{t("help_contact_hotline")}</Text> {/*  Dịch */}
                                         <Text strong style={{ color: '#1677ff' }}><PhoneOutlined style={{ marginRight: 6 }} /> 8888 9999</Text>
                                     </Paragraph>
                                 </Card>
@@ -314,7 +314,7 @@ const SupportDashboard = () => {
 
                         {/* Thời gian hỗ trợ */}
                         <Paragraph style={{ margin: 0 }}>
-                            <Text type="secondary">{t("help_contact_time")}</Text> {/* 👈 Dịch */}
+                            <Text type="secondary">{t("help_contact_time")}</Text> {/*  Dịch */}
                         </Paragraph>
                     </Card>
                 </Col>

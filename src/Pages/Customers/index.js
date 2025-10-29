@@ -443,7 +443,7 @@ function Customers() {
                             style={{ display: "flex", alignItems: "center", gap: "12px", color: "#262626", margin: 0 }}
                         >
                             <UserOutlined style={{ color: "#fff", backgroundColor: "#f7bc0cff", borderRadius: "50%", padding: 10, fontSize: 22, boxShadow: "0 3px 6px rgba(52, 152, 219, 0.4)" }} />
-                            <span style={{ fontWeight: 700, fontSize: 22}}>
+                            <span style={{ fontWeight: 700, fontSize: 19}}>
                                 {t("cus_title_customer_management")} 
                             </span>
                         </Title>
