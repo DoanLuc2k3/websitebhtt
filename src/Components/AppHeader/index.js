@@ -82,7 +82,7 @@ const mockSearchData = [
 // --- MAIN COMPONENT: APPHEADER ---
 // =================================================================
 
-function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 Thêm props isDarkMode, onToggleDarkMode
+function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { 
     
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
@@ -90,10 +90,9 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 T
     const [comments, setComments] = useState([]);
     const [orders, setOrders] = useState([]);
     const [commentsOpen, setCommentsOpen] = useState(false);
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [notificationsOpen, setNotifications] = useState(false); // Đổi tên để tránh conflict
     const [adminOpen, setAdminOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
-    // const [darkMode, setDarkMode] = useState(false); // 👈 Bỏ state này, dùng prop isDarkMode
     const [systemSettings, setSystemSettings] = useState({
         notifications: true,
         autoUpdate: false,
@@ -136,32 +135,21 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 T
     );
 
     const handleToggleDarkMode = useCallback(() => {
-        const newDarkMode = !isDarkMode; // Lấy trạng thái mới
-        onToggleDarkMode(newDarkMode); // Kích hoạt hàm bên ngoài
+        const newDarkMode = !isDarkMode; 
+        onToggleDarkMode(newDarkMode); 
         message.info(
             t("dark_mode_status", {
                 status: newDarkMode ? t("switch_to_dark") : t("switch_to_light"),
             })
         );
-    }, [isDarkMode, onToggleDarkMode, t]); // 👈 Cập nhật dependency
-
-    const handleIconHover = (e, isEntering, iconColor = "#555") => {
-        const target = e.currentTarget;
-        const icon = target.querySelector(".anticon");
-        if (isEntering) {
-            target.style.backgroundColor = PRIMARY_COLOR;
-            if (icon) icon.style.color = "white";
-        } else {
-            target.style.backgroundColor = isDarkMode ? '#1e1e1e' : "#f5f5f5"; // 👈 Sửa màu nền hover cho dark mode
-            if (icon) icon.style.color = iconColor;
-        }
-    };
+    }, [isDarkMode, onToggleDarkMode, t]); 
 
     // =================================================================
-    // 🔍 LOGIC RENDER ITEM & SEARCH OPTIONS (Dùng useMemo)
+    // 🔍 LOGIC RENDER ITEM & SEARCH OPTIONS (Sửa lỗi dependency)
     // =================================================================
 
-    const renderItem = (item) => {
+    // ✅ Đặt renderItem vào useCallback để tạo dependency ổn định
+    const renderItem = useCallback((item) => {
         const label =
             i18n.language === "en" ? item.label_en || item.label : item.label_vi || item.label;
         const price =
@@ -204,9 +192,23 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 T
                 </Flex>
             ),
         };
-    };
+    }, [i18n.language, t]); // ✅ Thêm i18n.language và t vào dependency
 
-    const currentSearchOptions = useMemo(() => mockSearchData.map(renderItem), [i18n.language]);
+    // ✅ useMemo dùng renderItem làm dependency
+    const currentSearchOptions = useMemo(() => mockSearchData.map(renderItem), [renderItem]); 
+    
+    // ✅ handleIconHover cũng cần isDarkMode và PRIMARY_COLOR
+    const handleIconHover = useCallback((e, isEntering, iconColor = "#555") => {
+        const target = e.currentTarget;
+        const icon = target.querySelector(".anticon");
+        if (isEntering) {
+            target.style.backgroundColor = PRIMARY_COLOR;
+            if (icon) icon.style.color = "white";
+        } else {
+            target.style.backgroundColor = isDarkMode ? '#1e1e1e' : "#f5f5f5"; 
+            if (icon) icon.style.color = iconColor;
+        }
+    }, [isDarkMode, PRIMARY_COLOR]); // ✅ Thêm isDarkMode vào dependency
 
     // =================================================================
     // 🧑‍💼 ADMIN POPOVER CONTENT (Không thay đổi)
@@ -277,7 +279,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 T
             >
                 <Typography.Title level={3} style={{ margin: 0 }}>
                     <img
-                        src="https://i.imgur.com/XgFmg6W.png"
+                        src="https://i.imgur.com/WadTB6X.png" 
                         alt="Logo"
                         style={{ height: 48, objectFit: "contain" }}
                     />
@@ -404,7 +406,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 T
                         type="default"
                         shape="circle"
                         icon={<BellOutlined style={{ fontSize: 20, color: isDarkMode ? '#ccc' : "#555" }} />}
-                        onClick={() => setNotificationsOpen(true)}
+                        onClick={() => setNotifications(true)}
                         style={{ 
                             backgroundColor: isDarkMode ? '#333' : "#f5f5f5", // 👈 Dark Mode
                             borderColor: "transparent",
@@ -455,7 +457,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { // 👈 T
             <Drawer
                 title={t("order_notification")}
                 open={notificationsOpen}
-                onClose={() => setNotificationsOpen(false)}
+                onClose={() => setNotifications(false)}
                 maskClosable
                 style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} // 👈 Dark Mode
             >
